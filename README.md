@@ -1,4 +1,6 @@
 # xavax-avalanche
+[![Test Status](https://github.com/diinki/xavax-avalanche/workflows/Rust/badge.svg?event=push)](https://github.com/diinki/xavax-avalanche/actions)
+
 An implementation of the Avalanche Virtual Machine transaction format.
 
 `xavax-avalanche` in a nutshell:
