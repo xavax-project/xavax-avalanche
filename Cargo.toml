@@ -1,0 +1,29 @@
+[package]
+name = "xavax-avalanche"
+description = "Rust implmenetation of the Avalanche transaction format, including a parser to parse data from and into native structs."
+authors = ["Diinki Gati, <https://kayowo.net> | <https://xavax.net>"]
+version = "0.1.1-beta"
+edition = "2021"
+repository = "https://github.com/diinki/xavax_avalanche"
+license = "Apache-2.0"
+keywords = ["avalanche", "crypto", "cryptocurrency", "avax"]
+categories = ["cryptography::cryptocurrencies", "encoding", "parser-implementations"]
+readme = "README.md"
+homepage = "https://api.xavax.net"
+publish = false
+
+[badges]
+maintenance = { status = "actively-developed" }
+
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+
+serde = {version = "1.0.130", features = ["derive", "serde_derive"]}
+serde_json = {version = "1.0.68"}
+tracing = "0.1.29"
+hex-literal = "0.3.3"
+bech32 = "0.8.1"
+bs58 = "0.4.0"
+sha2 = "0.9.8"
