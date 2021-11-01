@@ -825,13 +825,35 @@ impl Parser for OperationTx {
 }
 impl Parser for ImportTx {
     fn from_bytes(&mut self, raw_payload: &[u8]) {
-        todo!()
+        let mut offset: usize = 0;
+
+        let mut basetx: BaseTx = BaseTx::default();
+        basetx.from_bytes(&raw_payload[..]);
+        self.base_tx = basetx.clone();
+        offset += basetx.to_bytes().len();
+        
+        self.source_chain = raw_payload[offset..=(offset + 31)].try_into().expect("Slice with incorrect length!");
+        offset += 32;
+
+        let input_len: u32 = extract_u32(raw_payload[offset..=(offset + 3)].borrow());
+        offset += 4;
+
+        let mut index: usize = 0;
+        while index < input_len as usize{
+            let mut input: TransferableInput = TransferableInput::default();
+            input.from_bytes(&raw_payload[offset..]);
+            self.inputs.push(input.clone());
+            offset += input.to_bytes().len();
+            index += 1;
+        }
     }
 
     fn to_bytes(&self) -> Vec<u8> {
         let mut result: Vec<u8> = Vec::new();
         result.extend_from_slice(&self.base_tx.to_bytes()[..]);
         result.extend_from_slice(&self.source_chain);
+
+        result.extend_from_slice(&(self.inputs.len() as u32).to_be_bytes());
         for i in &self.inputs {
             result.extend_from_slice(&i.to_bytes());
         }
@@ -844,7 +866,27 @@ impl Parser for ImportTx {
 }
 impl Parser for ExportTx {
     fn from_bytes(&mut self, raw_payload: &[u8]) {
-        
+        let mut offset: usize = 0;
+
+        let mut basetx: BaseTx = BaseTx::default();
+        basetx.from_bytes(&raw_payload[..]);
+        offset += basetx.to_bytes().len();
+        self.base_tx = basetx;
+        self.destination_chain = raw_payload[offset..=(offset + 31)].try_into().expect("Slice with incorrect length!");
+        offset += 32;
+
+        let output_len: u32 = extract_u32(raw_payload[offset..=(offset + 3)].borrow());
+        offset += 4;
+
+        let mut index: usize = 0;
+        while index < output_len as usize{
+            let mut output: TransferableOutput = TransferableOutput::default();
+            output.from_bytes(&raw_payload[offset..]);
+            self.outputs.push(output.clone());
+            offset += output.to_bytes().len();
+            index += 1;
+        }
+
     }
 
     fn to_bytes(&self) -> Vec<u8> {
@@ -955,10 +997,11 @@ impl Parser for SignedTransaction {
 #[cfg(test)]
 mod tests {
     use crate::avm::tx_format::*;
+    use crate::encoding::cb58::decode_cb58;
     use crate::parser::parser_traits::Parser;
 
     #[test]
-    fn test_signed_transactions() {
+    fn test_signed_basetx() {
         let tx_bytes: Vec<u8> = [0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 171, 104, 235, 30, 225, 66, 160, 92, 254, 118, 140, 54, 225, 31, 11, 89, 109, 181, 163, 198, 199, 122, 171, 230, 101, 218, 217, 230, 56, 202, 148, 247, 0, 0, 0, 2, 61, 155, 218, 192, 237, 29, 118, 19, 48, 207, 104, 14, 253, 235, 26, 66, 21, 158, 179, 135, 214, 210, 149, 12, 150, 247, 210, 143, 97, 187, 226, 170, 0, 0, 0, 7, 0, 0, 0, 0, 5, 245, 225, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 225, 192, 227, 141, 2, 91, 88, 182, 70, 18, 49, 118, 133, 237, 93, 69, 24, 98, 122, 184, 61, 155, 218, 192, 237, 29, 118, 19, 48, 207, 104, 14, 253, 235, 26, 66, 21, 158, 179, 135, 214, 210, 149, 12, 150, 247, 210, 143, 97, 187, 226, 170, 0, 0, 0, 7, 0, 0, 0, 0, 101, 38, 42, 64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 228, 143, 250, 126, 199, 246, 173, 35, 25, 46, 194, 48, 212, 217, 31, 142, 47, 109, 72, 27, 0, 0, 0, 1, 57, 175, 146, 230, 146, 127, 197, 9, 6, 11, 146, 154, 195, 232, 141, 186, 169, 153, 78, 109, 63, 146, 149, 187, 9, 158, 170, 40, 58, 171, 50, 147, 0, 0, 0, 1, 61, 155, 218, 192, 237, 29, 118, 19, 48, 207, 104, 14, 253, 235, 26, 66, 21, 158, 179, 135, 214, 210, 149, 12, 150, 247, 210, 143, 97, 187, 226, 170, 0, 0, 0, 5, 0, 0, 0, 0, 107, 
         43, 77, 128, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 9, 0, 0, 0, 1, 101, 70, 212, 59, 128, 211, 99, 70, 150, 149, 36, 50, 2, 199, 122, 9, 102, 63, 73, 197, 204, 169, 142, 245, 4, 220, 103, 137, 168, 74, 198, 175, 99, 122, 134, 
         224, 231, 134, 131, 95, 230, 169, 27, 4, 37, 140, 54, 226, 159, 153, 108, 53, 190, 86, 3, 238, 157, 25, 43, 139, 9, 162, 144, 31, 1].to_vec();
@@ -970,6 +1013,18 @@ mod tests {
         
         let cb_58_encoded_tx = "111111111UgbbpcKWRe4kWhsrY3aAUd2xUwYYrjWfeSp6g8b9uaE5J35JTCgpYStYfDZp6cGKXv5MrqGWc7urASV1WAusjRvfBwnnmS2SpKoPj6nLbRXJGU636xg3L8Z2kvrPdqaCiQmcN8jbFx1q6Utqy8bp9SQWcGXLb5oBGZspQqL7RorBAbvWmmSG21hg2ewFTd5s4oxS8BFEgQWLxYBR3PapWKR8tpB1PXcMJKaqkHhoXZiN5BDf75bVqmv8kTdFCiKXWQXF6T4f6mZF6gdLzeFuEyYzJNgqTWiVimqLNkrjUGmFEd4zttdFuWJWwomJygTMsn65bD3VgGw6S5bC769K7FqRnziTYhyPDvPb6ucsKXVkGwdZNL6hZDANBuSHfzjWSzGLEvPDcByjG47ZXSDtzrJ5zQUEyd9NwxoAwPjwFBtm8yi1doKu8dZCKPCfr3UgvAmxFc2STVud5wvBS49oZ2assBPqzEP2X4EBGWtSj8mR2F4bJFLM3U5gXhDfne".to_string();
         
+        assert_eq!(tx.to_cb58(), cb_58_encoded_tx);
+    }
+
+    #[test]
+    fn test_signed_import_tx() {
+        //Cross chain C-chain ---> X-Chain
+        let cb_58_encoded_tx = "1111129nuK2FE1cuYYYcm6aZQw48K8UeDv6MZ8wMY6h77pPNnQ19UqKoSpckAdzrZFHTVS3xV8ypR3Xrvu9ZxkarccDZrWjDSHxSbR8qEdqcJGqtr4T9jXzvUYLc13AdtMsDf7Dq24d7qAxuMhBcxJeAzfKPGw6pVcGvq26eeqvtcmqNGtdXZKN9sFGccpqjKTh1BMUwsd9e5SmKMcwaC3B51WrfrhC4z5m2dctWCAhSHa2fs8zX3seQXHq5dRFKkJz2aDouL2LJw2DRh1HHdKzbPqMXnAPo3KSCLZyBaDXhomDKe2qKUoR3QKS9r1QMv3Ha8WqjNcv9e3KYQJjgcXLJJj5GjvqKW7uhi8rD5SznHFuB5QZYemk555Pb7Vz5TKLTjUPSJA8H9CEtKP3sEp9SZnmyeZp19UpjyjNFUksnaTXfs5tRUKzdsNsxhaNd8y3mgTa1BfiSs".to_string();
+        let temp = decode_cb58(cb_58_encoded_tx.clone());
+
+        let mut tx: SignedTransaction = SignedTransaction::default();
+        tx.from_bytes(&temp);
+
         assert_eq!(tx.to_cb58(), cb_58_encoded_tx);
     }
 }
