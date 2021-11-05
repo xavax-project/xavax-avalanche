@@ -11,7 +11,7 @@ including serialization.
 * [CB58](https://support.avax.network/en/articles/4587395-what-is-cb58) Encoding/Decoding.
 * Creates byte payloads [ready](https://docs.avax.network/build/references/serialization-primitives) to be sent to avalanche nodes!
 
-All that is missing is signing transaction and key management, and all that is taken care of by the `xavax-crypto` crate! *(see the xavax-api crate for a full avalanche network SDK)*
+All that is missing is signing transactions and keychain management, and all that is taken care of by the `xavax-crypto` crate! *(see the xavax-api crate for a full avalanche network SDK)*
 
 ___
 
