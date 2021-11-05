@@ -10,7 +10,7 @@ keywords = ["avalanche", "crypto", "cryptocurrency", "avax"]
 categories = ["cryptography::cryptocurrencies", "encoding", "parser-implementations"]
 readme = "README.md"
 homepage = "https://api.xavax.io"
-publish = false
+publish = true
 
 [badges]
 maintenance = { status = "actively-developed" }
