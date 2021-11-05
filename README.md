@@ -1,7 +1,8 @@
 # xavax-avalanche
 [![Test Status](https://github.com/diinki/xavax-avalanche/workflows/Rust/badge.svg?event=push)](https://github.com/diinki/xavax-avalanche/actions)
 
-An implementation of the Avalanche Virtual Machine transaction format.
+A Rust implementation of the Avalanche Virtual Machine transaction format,
+including serialization.
 
 `xavax-avalanche` in a nutshell:
 
@@ -16,22 +17,24 @@ ___
 
 ## Some things to point out
 
-* `xavax-avalanche` is currently in very early development, but optimizations and better docs should be available not too long after release!
+* `xavax-avalanche` is currently in very early development, but optimizations and better docs should be available not too long after release! Don't be surprised if there are bugs.
 
-* `xavax-avalanche` is fairly simple in principle and is used together with other libraries in the `xavax-api` crate, this includes `xavax-crypto` and `xavax-eth`.
 
-* All the xavax crates including `xavax-avalanche` are used in open-source projects by xavax, an example of which is the [Avalanche](https://www.avax.network/) Metro desktop wallet.
+* `xavax-avalanche` is fairly simple in principle and is used together with other libraries in the `xavax-api` crate, this includes `xavax-crypto` and `xavax-eth` *(which might be upcoming)*
 
+* All the xavax crates including `xavax-avalanche` are used in open-source projects by xavax, an example of which is the [Metro desktop wallet](https://wallet.xavax.io).
+
+I recommend using this library for research purposes only.
 ___
 ## Documentation
-`xavax-avalanche` 'n' [friends](https://api.xavax.net) will have quite a lot of documentation and examples, this includes the Metro wallet itself as an example *(although the early wallet will have a lot of spaghetti code)*.
+`xavax-avalanche` 'n' [friends](https://api.xavax.io) will have quite a lot of documentation and examples, this includes the Metro wallet itself as an example *(although the early wallet will have a lot of spaghetti code)*.
 
 That being said, there are many examples that you can read about and try here:
 
-* [`xavax-api docs`](https://api.xavax.net/docs) - Includes examples, and a few videos.
+* [`xavax-api docs`](https://api.xavax.io) - Includes examples, and a few videos.
 * [`docs.rs`](docs.rs/xavax-avalanche/0.1.0-beta0) - Standard documentation
 
-*ps, this crate is very early and I am lazy so I'm future-proofing the README,some of these links may be temporarily invalid as a result...*
+*ps, this crate is very early and I am lazy so I'm future-proofing this README, some of these links may be temporarily invalid as a result...*
 ___
 
 ## Usage
@@ -40,6 +43,25 @@ At first, add this to your `Cargo.toml` file:
 [dependencies]
 xavax-avalanche = "0.1.2"
 ```
+
+You could create a base transaction, among other transactions:
+```rust
+use xavax_avalanche::avm::tx_format::*;
+
+//Create a base tx
+let mut tx: BaseTx = BaseTx::default();
+//Manually set the values
+tx.type_id = 0;
+tx.network_id = 5;
+
+//Or parse a byte-payload into a base_tx:
+let mut tx: BaseTx = BaseTx::default();
+
+let tx_bytes: Vec<u8> = [0, 0, 0, 0, 0, 0, 0, 0, 0,].to_vec();
+tx.from_bytes(&tx_bytes);
+```
+ps: the xavax-api *which might still be upcoming* will automatically generate
+different transactions types
 
 Then go read some examples, maybe watch the tutorial videos that I might make some day, and experiment!
 
@@ -50,10 +72,10 @@ ___
 
  More information about the future as well as a roadmap of the api can be found at the [xavax](https://api.xavax.net)
 
- 
+ ### Temorary note:
+ The API is unfinished at the current time, if you want more information about what the full API will be you can follow me at [twitter](https://twitter.com/DiinkiTheImp), or look at the [xavax introduction](https://kayowo.net/Logs/XavaxIntroduction/) blog.
  ___
 
-
  ## License
- xavax-avalanche is distributed with the Apache 2.0 License.
+ xavax-avalanche is distributed with the [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0.txt) License.
  
