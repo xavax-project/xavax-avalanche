@@ -2,7 +2,7 @@
 name = "xavax-avalanche"
 description = "Rust implmenetation of the Avalanche transaction format, including a parser to parse data from and into native structs."
 authors = ["Diinki Gati, <https://kayowo.net> | <https://xavax.net>"]
-version = "0.1.0-beta"
+version = "0.1.1-beta"
 edition = "2021"
 repository = "https://github.com/diinki/xavax-avalanche"
 license = "Apache-2.0"
