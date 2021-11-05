@@ -41,7 +41,7 @@ ___
 At first, add this to your `Cargo.toml` file:
 ```toml
 [dependencies]
-xavax-avalanche = "0.1.2"
+xavax-avalanche = "0.1.0-beta"
 ```
 
 You could create a base transaction, among other transactions:
@@ -53,6 +53,9 @@ let mut tx: BaseTx = BaseTx::default();
 //Manually set the values
 tx.type_id = 0;
 tx.network_id = 5;
+
+//Turn the tx into a serialized byte payload
+let payload = tx.to_bytes();
 
 //Or parse a byte-payload into a base_tx:
 let mut tx: BaseTx = BaseTx::default();
