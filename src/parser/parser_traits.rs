@@ -23,39 +23,12 @@
 /// Parser also has a function that encodes the raw bytes to CB58 encoding, which is the encoding used by
 /// the avalanche network.
 /// 
-/// **Parser has three functions:**
-/// ```ignore,
-/// //Takes in a raw_payload and attempt to parse it into the data-structure of self that implements the trait.
-/// fn from_bytes(&mut self, raw_payload: &[u8]); 
-/// 
-/// //Returns self into a serialized byte-payload form using the avalanche serialization format
-/// fn to_bytes(&self) -> &[u8]; 
-/// 
-/// //Returns the from_bytes() payload serialized in CB58.
-/// fn to_cb58(&self) -> String; 
-/// ```
 /// ___
 /// * The byte-payload is serialized using [the Avalanche serialization format](https://docs.avax.network/build/references/serialization-primitives)
-/// 
-/// 
 /// * CB58 encoding is practically the same as Base 58 Check but with a different checksum algorithm, you can find a CB58 implementation in the cb58.rs module
 /// that this crate has.
 /// ___
 /// 
-/// ## Example:
-/// 
-/// ```ignore,
-/// //Some arbitrary data-type that has the Parser trait implemented.
-/// pub struct Output {
-///     type_id: u32,
-///     some_data: [u8; 32]
-/// }
-/// 
-/// //Use the Parser trait to get the Output datatype serialized in bytes.
-/// let mut bababooey: Output = Output::default();
-/// let bytes: Vec<u8> = bababooey.to_bytes();
-/// 
-/// ```
 pub trait Parser {
     fn from_bytes(&mut self, raw_payload: &[u8]);
     fn to_bytes(&self) -> Vec<u8>;

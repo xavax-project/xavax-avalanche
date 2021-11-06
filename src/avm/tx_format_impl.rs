@@ -1,6 +1,8 @@
 use std::borrow::Borrow;
 use std::convert::TryInto;
 
+use tracing::error;
+
 use super::tx_format::*;
 use crate::encoding::cb58::encode_cb58;
 use crate::parser::byte_conversion::*;
@@ -770,7 +772,7 @@ impl Parser for BaseTx {
 }
 impl Parser for CreateAssetTx {
     fn from_bytes(&mut self, raw_payload: &[u8]) {
-        todo!()
+        todo!();
     }
 
     fn to_bytes(&self) -> Vec<u8> {
@@ -799,7 +801,34 @@ impl Parser for CreateAssetTx {
 }
 impl Parser for OperationTx {
     fn from_bytes(&mut self, raw_payload: &[u8]) {
-        todo!()
+        let mut offset: usize = 0;
+
+        let mut basetx: BaseTx = BaseTx::default();
+        basetx.from_bytes(&raw_payload[..]);
+        self.base_tx = basetx.clone();
+        offset += basetx.to_bytes().len();
+
+        let operation_type: u32 = extract_u32(&raw_payload[offset..=(offset + 3)]);
+        match operation_type {
+            8 => {
+                let mut op = SECP256K1MintOp::default();
+                op.from_bytes(&raw_payload[..]);
+                self.operation = TransferOps::SECP256K1MintOp(op);
+            }
+            12 =>{
+                let mut op = NFTMintOp::default();
+                op.from_bytes(&raw_payload[..]);
+                self.operation = TransferOps::NFTMintOp(op);
+            }
+            13 =>{
+                let mut op = NFTTransferOp::default();
+                op.from_bytes(&raw_payload[..]);
+                self.operation = TransferOps::NFTTransferOp(op);
+            }
+            _=> {
+                error!("Incorrect Operation TypeID!");
+            }
+        }
     }
 
     fn to_bytes(&self) -> Vec<u8> {
@@ -861,7 +890,7 @@ impl Parser for ImportTx {
     }
 
     fn to_cb58(&self) -> String {
-        todo!()
+        encode_cb58(&self.to_bytes()[..])
     }
 }
 impl Parser for ExportTx {

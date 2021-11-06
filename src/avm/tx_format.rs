@@ -35,14 +35,9 @@ use crate::primitives::{address};
 /// ___
 /// 
 /// * `asset_id` is a 32 byte array which references what asset the `Output` is acting upon.
+/// 
 /// * `output` is an enum which can contain an arbitrary AVM Output.
 /// 
-/// ```ignore,
-/// pub struct TransferableOutput {
-///     pub asset_id: [u8; 32],
-///     pub output: Outputs
-/// }
-/// ```
 #[derive(Serialize, Deserialize, Default, Debug, Clone)]
 pub struct TransferableOutput {
     pub asset_id: [u8; 32],
@@ -54,19 +49,14 @@ pub struct TransferableOutput {
 /// `Outputs` is an enum that can hold any of the AVM output types. The current output
 /// types the AVM Has are:
 /// ___
-/// * SECP256K1TransferOutput() [see docs](https://docs.avax.network/build/references/avm-transaction-serialization#secp256k1-transfer-output)
-/// * SECP256K1MintOutput()     [see docs](https://docs.avax.network/build/references/avm-transaction-serialization#secp256k1-mint-output)
-/// * NFTTransferOutput()       [see docs](https://docs.avax.network/build/references/avm-transaction-serialization#nft-transfer-output)
-/// * NFTMintOutput()           [see docs](https://docs.avax.network/build/references/avm-transaction-serialization#nft-mint-output)
+/// * SECP256K1TransferOutput() [see reference](https://docs.avax.network/build/references/avm-transaction-serialization#secp256k1-transfer-output)
 /// 
-/// ```ignore,
-/// pub enum Outputs {
-///     SECP256K1TransferOutput(SECP256K1TransferOutput),
-///     SECP256K1MintOutput(SECP256K1MintOutput),
-///     NFTTransferOutput(NFTTransferOutput)
-///     NFTMintOutput(NFTMintOutput)
-/// }
-/// ```
+/// * SECP256K1MintOutput()     [see reference](https://docs.avax.network/build/references/avm-transaction-serialization#secp256k1-mint-output)
+/// 
+/// * NFTTransferOutput()       [see reference](https://docs.avax.network/build/references/avm-transaction-serialization#nft-transfer-output)
+/// 
+/// * NFTMintOutput()           [see reference](https://docs.avax.network/build/references/avm-transaction-serialization#nft-mint-output)
+/// 
 /// Outputs also implements the Default trait, which will simply return an empty SECP256K1TransferOutput.
 /// 
 /// ps: the Outputs enum is not to be confused with the regular Output struct, which is another data-type used
@@ -92,21 +82,16 @@ impl Default for Outputs {
 /// ___
 /// 
 ///  * `type_id` is the ID for this output type, for SECP256K1TransferOutput its always 7.
+/// 
 ///  * `amount` is the amount of the asset that this output has.
+/// 
 ///  * `locktime` is the specified unix time of which this output can be spend after.
+/// 
 ///  * `threshold` is an int that specifies the amount of unique signatures needed for this output to be spent.
+/// 
 ///  * `addresses` is a list of addresses that correspond to the Private keys that can be used to spend this output.
 /// These addresses must be sorted in lexical order.
-///
-/// ```ignore,
-/// pub struct SECP256K1TransferOutput {
-///     pub type_id: u32, 
-///     pub amount: u64, 
-///     pub locktime: u64, 
-///     pub threshhold: u32, 
-///     pub addresses: Vec<address::Address> 
-/// }
-/// ```
+
 #[derive(Serialize, Deserialize, Default, Debug, Clone)]
 pub struct SECP256K1TransferOutput {
     pub type_id: u32,
@@ -129,19 +114,15 @@ pub struct SECP256K1TransferOutput {
 /// ___
 /// 
 ///  * `type_id` is the ID for this output type, for SECP256K1TransferOutput its always 6.
+/// 
 ///  * `locktime` is the specified unix time of which this output can be spend after.
+/// 
 ///  * `threshold` is an int that specifies the amount of unique signatures needed for this output to be spent.
+/// 
 ///  * `addresses` is a list of addresses that correspond to the Private keys that can be used to spend this output.
+/// 
 /// These addresses must be sorted in lexical order.
 ///
-/// ```ignore,
-/// pub struct SECP256K1MintOutput {
-///     pub type_id: u32, 
-///     pub locktime: u64, 
-///     pub threshhold: u32, 
-///     pub addresses: Vec<address::Address> 
-/// }
-/// ```
 #[derive(Serialize, Deserialize, Default, Debug, Clone)]
 pub struct SECP256K1MintOutput {
     pub type_id: u32,
@@ -156,15 +137,6 @@ pub struct SECP256K1MintOutput {
 /// output in order to mint the NFTs?).*
 /// ___
 ///
-/// ```ignore,
-/// pub struct NFTMintOutput {
-///     pub type_id: u32, 
-///     pub group_id: u32
-///     pub locktime: u64, 
-///     pub threshhold: u32, 
-///     pub addresses: Vec<address::Address> 
-/// }
-/// ```
 #[derive(Serialize, Deserialize, Default, Debug, Clone)]
 pub struct NFTMintOutput {
     pub type_id: u32,
@@ -181,23 +153,16 @@ pub struct NFTMintOutput {
 /// ___
 /// 
 /// * `type_id` is the ID for this output type, for NFTTransferOutputs its always 11.
+/// 
 /// * `group_id` is an integer that specifies the group this NFT was issued to.
+/// 
 /// * `payload` is an arbitrary amount of bytes no longer than 1024 bytes. This can be
 /// a json payload, or just any string...
+/// 
 /// * `locktime` is the specified unix time of which this output can be spend after.
+/// 
 /// * `addresses`is a list of addresses that correspond to the Private keys that can be used to spend this output.
 /// These addresses must be sorted in lexical order.
-/// 
-/// ```ignore,
-/// pub struct NFTTransferOutput {
-///     pub type_id: u32, 
-///     pub group_id: u32
-///     pub payload: Vec<u8>
-///     pub locktime: u64, 
-///     pub threshhold: u32, 
-///     pub addresses: Vec<address::Address> 
-/// }
-/// ```
 #[derive(Serialize, Deserialize, Default, Debug, Clone)]
 pub struct NFTTransferOutput {
     pub type_id: u32,
@@ -210,8 +175,9 @@ pub struct NFTTransferOutput {
 
 
 /// # Output
+/// ___
 /// Output is a minimal Output object which only contains the basics. This is used by the NFTMintOp.
-/// 
+/// ___
 /// 
 /// * `locktime` is the specified unix time of which this output can be spend after.
 /// * `threshold` is an int that specifies the amount of unique signatures needed for this output to be spent.
@@ -244,26 +210,20 @@ pub struct UTXO {
 /// `SECP256K1TransferInput`.
 /// ___
 /// 
-/// > * `output_consumer_owners` is a list of addresses that correspond to the addresses that own the Output that this
+/// * `output_consumer_owners` is a list of addresses that correspond to the addresses that own the Output that this
 /// Input consumes! This is purely a helper data-type for the XAVAX-API and NOT Part of the message payload!
+/// 
 /// * `tx_id` is a 32 byte array that defines which transaction this Input is consuming an Output from.
 /// TxId's are the SHA256 Hash of the bytes of the Signed transaction.
+/// 
 /// * `utxo_index` is an integer that defines whcih UTXO This input is consuming in the specified transaction (specified
 /// by the tx_id). This is obviously needed because a transaction can have many different outputs!
+/// 
 /// * `asset_id` is a 32 byte array that specifies which asset this input references.
+/// 
 /// * `input` is an SECP256K1TransferInput, the AVM currently only supports this input for transferable inputs,
 /// so no fancy enums for different input types here...
-/// 
-/// ```ignore,
-/// pub struct TransferableInput {
-///     pub output_consumer_owners: Vec<address::Address>, //Not part of the message payload!
-/// 
-///     pub tx_id: [u8; 32],
-///     pub utxo_index: u32,
-///     pub asset_id: [u8; 32],
-///     pub secp256k1_transfer_input: SECP256K1TransferInput
-/// }
-/// ``` 
+
 #[derive(Serialize, Deserialize, Default, Debug, Clone)]
 pub struct TransferableInput {
     pub output_consumer_owners: Vec<address::Address>, //Not part of the message payload!
@@ -280,20 +240,15 @@ pub struct TransferableInput {
 /// ___
 /// 
 /// * `type_id` is the ID for this input type, which for SECP256K1TransferInputs is always 5.
+/// 
 /// * `amount` is the amount of an asset that this Input spends, this must be equal to the amount
 /// in the UTXO This output consumes!
+/// 
 /// * `address_indices` is a list of Unique integers that define the Private keys that are being used to 
 /// spend the UTXO, this is because a UTXO can have multiple addresses that can spend the UTXO, each integer here
 /// defines the index in the list of addresses that can spend the UTXO in the UTXO Adress list. This list must
 /// be sorted from low to high.
 /// 
-/// ```ignore,
-/// pub struct SECP256K1TransferInput {
-///     pub type_id: u32,
-///     pub amount: u64,
-///     pub address_indices: Vec<u32>,
-/// }
-/// ```
 #[derive(Serialize, Deserialize, Default, Debug, Clone)]
 pub struct SECP256K1TransferInput {
     pub type_id: u32,
@@ -307,20 +262,13 @@ pub struct SECP256K1TransferInput {
 /// # Credential
 /// ___
 /// A Credential is a type_id and a list of signatures, there are two type IDs for Credentials:
+/// ___
 /// * SECP256K1 Credential, where the `type_id` is **9**
-/// 
-/// and
 /// 
 /// * NFT Credential, where the `type_id` is **14**
 /// 
 /// * `signatures` is a list of signatures.
-/// 
-/// ```ignore,
-/// pub struct Credential {
-///     pub type_id: u32,
-///     pub signatures: Vec<Vec<u8>>
-/// }
-/// ```
+
 #[derive(Serialize, Deserialize, Default, Debug, Clone)]
 pub struct Credential {
     pub type_id: u32,
@@ -343,13 +291,6 @@ pub struct Credential {
 /// 
 /// * `fx_id` is an integer that defines what type of ANT this is. For SECP256K1 Assets its `0`, for NFTs its `1`
 /// * `outputs` is a list of `Outputs`, which is an enum of all kind of outputs.
-/// 
-/// ```ignore,
-/// pub struct InitialState {
-///     pub fx_id: u32,
-///     pub outputs: Vec<Outputs>
-/// }
-/// ```
 #[derive(Serialize, Deserialize, Default, Debug, Clone)]
 pub struct InitialState {
     pub fx_id: u32,
@@ -368,13 +309,6 @@ pub struct InitialState {
 /// * NFTMintOp()
 /// * NFTTransferOk()
 /// 
-/// ```ignore,
-/// pub enum TransferOps {
-///     SECP256K1MintOperation(SECP256K1MintOperation),
-///     NFTMintOp(NFTMintOp),
-///     NFTTransferOk(NFTTransferOk)
-/// }
-/// ```
 /// TransferOps also implement the Default trait, which will simply return an empty SECP256K1TransferOutput.
 /// 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -433,15 +367,6 @@ pub struct NFTTransferOp {
 /// * ExportTx
 /// * ImportTx
 /// 
-/// ```ignore,
-/// pub enum Transactions {
-///     BaseTx(BaseTx),
-///     CreateAssetTx(CreateAssetTx),
-///     OperationTx(OperationTx),
-///     ExportTx(ExportTx),
-///     ImportTx(ImportTx)
-/// }
-/// ```
 /// Transactions also implement the Default trait, which will simply return an empty BaseTx.
 /// 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -460,44 +385,31 @@ impl Default for Transactions {
 
 
 /// # BaseTx
-/// 
+/// ___
 /// A BaseTx (Base transaction) is a primitive for all other transaction types, and also just
 /// a basic transaction that consumes outputs and creates input. Ps: The `type_id` changes when
 /// you use a basetx as a primitive for another transaction.
 /// ___
 /// * `type_id` is the ID for the Transaction Types. For a BaseTx the ID is 0.
-/// ___
-/// ___
+/// 
 /// * `network_id` is an int that defines which network this transaction is meant to be
+/// 
 /// issued to. This value is meant to support transaction routing (whatever that is) and is not
 /// designed for replay attack prevention. *(tf is transaction routing? I'm just quoting the docs for this one...)*
-/// ___
-/// ___
+/// 
 /// * `blockchain_id` is a 32 byte array which defines the blockchain this transaction is issued to. This is used for
 /// replay prevention for transactions that could be potentially valid across different networks and blockchains!
-/// ___
-/// ___
+/// 
 /// * `outputs` is an list of transferable output objects. These outputs must be sorted in lexical order by their 
 /// serialized representation in hex, and the total output quantity must be less than OR equal to the total quantity of
 /// each asset consumed in the inputs MINUS the transaction fees. (The value of the outputs the inputs consume cannot be
 /// more than themselves :p)
-/// ___
-/// ___
+/// 
 /// * `inputs` is a list of transferable input objects. Inputs are first sorted in lexical order, then by the utxo_index from
 /// low to high (in case there are two inputs that with the same tx_id).
-/// ___
-/// * `memo` memo is just an arbitrary payload of up to 256 bytes, could be a note to mother, or a payment reference...
 /// 
-/// ```ignore,
-///     pub struct BaseTx {
-///     pub type_id: u32,
-///     pub network_id: u32,
-///     pub blockchain_id: [u8; 32],
-///     pub outputs: Vec<TransferableOutput>,
-///     pub inputs: Vec<TransferableInput>,
-///     pub memo: Vec<u8>
-/// }
-/// ```
+/// * `memo` memo is just an arbitrary payload of up to 256 bytes, could be a note to mother, or a payment reference...
+
 #[derive(Serialize, Deserialize, Default, Debug, Clone)]
 pub struct BaseTx {
     pub type_id: u32,
@@ -516,23 +428,18 @@ pub struct BaseTx {
 /// of the asset: i.e the first set of Outputs of the Assets.
 /// ___
 /// * `base_tx` is a BaseTx with its `type_id` set to `1`
+/// 
 /// * `name` is a human readable name which defines the name of the asset. This string must only consist of ASCII characters
+/// 
 /// and not be longer than 128 Characters.
 /// * `symbol` is a human readable symbol which has to consist a maximum of `4` ASCII characters
+/// 
 /// * `denomination` is a byte which defines the divisibility of the asset this transaction will Create. The denomination
 /// cannot be more than 32. (the AVAX Asset has a denomination of 9, which means its divisible into billionths).
+/// 
 /// * `initial_states` is a vector of `InitialState`. These define the feature sets the asset will have as well as the Genesis
 /// of the asset.
 /// 
-/// ```ignore,
-/// pub struct CreateAssetTx {
-///     pub base_tx: BaseTx,
-///     pub name: String,
-///     pub symbol: String,
-///     pub denomination: u8,
-///     pub initial_states: Vec<InitialState>
-/// }
-/// ```
 #[derive(Serialize, Deserialize, Default, Debug, Clone)]
 pub struct CreateAssetTx {
     pub base_tx: BaseTx,
