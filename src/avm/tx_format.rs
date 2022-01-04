@@ -15,8 +15,6 @@ use crate::primitives::{address};
     but whatever leave me alone...
 
     Also, thx ava-labs for creating really good documentation for the transaction format! <3
-
-    ps: if you wanna read through without all the annoying docs in the way, just close them using the lil < arrows.
 */
 
 

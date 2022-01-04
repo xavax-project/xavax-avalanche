@@ -13,7 +13,7 @@ use crate::parser::byte_conversion::*;
 
 
 impl Parser for EVMOutput {
-    fn from_bytes(&mut self, raw_payload: &[u8]) {
+    fn from_bytes(&mut self, raw_payload: &[u8], offset: Option<&mut usize>) {
         let mut offset: usize = 0;
         self.address.address_bytes = raw_payload[offset..=(offset + 19)].try_into().expect("Slice with incorrect length! diinki pls fix");
         offset += 20;
@@ -35,7 +35,7 @@ impl Parser for EVMOutput {
     }
 }
 impl Parser for EVMInput {
-    fn from_bytes(&mut self, raw_payload: &[u8]) {
+    fn from_bytes(&mut self, raw_payload: &[u8], offset: Option<&mut usize>) {
         let mut offset: usize = 0;
         self.address.address_bytes = raw_payload[offset..=(offset + 19)].try_into().expect("Slice with incorrect length! diinki pls fix");
         offset += 20;
@@ -61,7 +61,7 @@ impl Parser for EVMInput {
 }
 
 impl Parser for ExportTx {
-    fn from_bytes(&mut self, raw_payload: &[u8]) {
+    fn from_bytes(&mut self, raw_payload: &[u8], offset: Option<&mut usize>) {
         let mut offset: usize = 0;
         self.type_id = extract_u32(raw_payload[offset..=(offset + 3)].borrow());
         offset += 4;
@@ -78,7 +78,7 @@ impl Parser for ExportTx {
         let mut index: usize = 0;
         while index < inputs_len as usize {
             let mut input: EVMInput = EVMInput::default();
-            input.from_bytes(&raw_payload[offset..]);
+            input.from_bytes(&raw_payload[offset..], None);
             self.inputs.push(input.clone());
             offset += input.to_bytes().len();
             index += 1;
@@ -90,7 +90,7 @@ impl Parser for ExportTx {
         let mut index: usize = 0;
         while index < output_len as usize {
             let mut output: TransferableOutput = TransferableOutput::default();
-            output.from_bytes(&raw_payload[offset..]);
+            output.from_bytes(&raw_payload[offset..], None);
             self.exported_outputs.push(output.clone());
             offset += output.to_bytes().len();
             index += 1;
@@ -122,7 +122,7 @@ impl Parser for ExportTx {
 }
 
 impl Parser for ImportTx {
-    fn from_bytes(&mut self, raw_payload: &[u8]) {
+    fn from_bytes(&mut self, raw_payload: &[u8], offset: Option<&mut usize>) {
         let mut offset: usize = 0;
         self.type_id = extract_u32(raw_payload[offset..=(offset + 3)].borrow());
         offset += 4;
@@ -139,7 +139,7 @@ impl Parser for ImportTx {
         let mut index: usize = 0;
         while index < input_len as usize {
             let mut input: TransferableInput = TransferableInput::default();
-            input.from_bytes(&raw_payload[offset..]);
+            input.from_bytes(&raw_payload[offset..], None);
             self.imported_inputs.push(input.clone());
             offset += input.to_bytes().len();
             index += 1;
@@ -151,7 +151,7 @@ impl Parser for ImportTx {
         let mut index: usize = 0;
         while index < imported_inputs_len as usize {
             let mut output: EVMOutput = EVMOutput::default();
-            output.from_bytes(&raw_payload[offset..]);
+            output.from_bytes(&raw_payload[offset..], None);
             self.outputs.push(output.clone());
             offset += output.to_bytes().len();
             index += 1;
@@ -184,7 +184,7 @@ impl Parser for ImportTx {
 
 
 impl Parser for SignedTransaction {
-    fn from_bytes(&mut self, raw_payload: &[u8]) {
+    fn from_bytes(&mut self, raw_payload: &[u8], offset: Option<&mut usize>) {
         let mut offset: usize = 0;
         self.codec_id = extract_u16(raw_payload[offset..=(offset + 1)].borrow());
         offset += 2;
@@ -193,13 +193,13 @@ impl Parser for SignedTransaction {
         match tx_type_id {
             0 => {
                 let mut tx: ImportTx = ImportTx::default();
-                tx.from_bytes(&raw_payload[offset..]);
+                tx.from_bytes(&raw_payload[offset..], None);
                 self.atomic_tx = AtomicTx::ImportTx(tx.clone());
                 offset += tx.to_bytes().len();
             }
             1 => {
                 let mut tx: ExportTx = ExportTx::default();
-                tx.from_bytes(&raw_payload[offset..]);
+                tx.from_bytes(&raw_payload[offset..], None);
                 self.atomic_tx = AtomicTx::ExportTx(tx.clone());
                 offset += tx.to_bytes().len();
             }
@@ -213,7 +213,7 @@ impl Parser for SignedTransaction {
         let mut index: u32 = 0;
         while index < cred_len {
             let mut c = Credential::default();
-            c.from_bytes(&raw_payload[offset..]);
+            c.from_bytes(&raw_payload[offset..], None);
             self.credentials.push(c.clone());
             offset += c.to_bytes().len();
             
@@ -265,7 +265,7 @@ mod tests {
         let temp = decode_cb58(cb_58_encoded_tx.clone());
 
         let mut tx: SignedTransaction = SignedTransaction::default();
-        tx.from_bytes(&temp);
+        tx.from_bytes(&temp, None);
 
         assert_eq!(tx.to_cb58(), cb_58_encoded_tx);
 
@@ -274,7 +274,7 @@ mod tests {
         let temp = decode_cb58(cb_58_encoded_tx.clone());
 
         let mut tx: SignedTransaction = SignedTransaction::default();
-        tx.from_bytes(&temp);
+        tx.from_bytes(&temp, None);
 
         assert_eq!(tx.to_cb58(), cb_58_encoded_tx);
     }

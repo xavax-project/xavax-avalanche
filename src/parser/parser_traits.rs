@@ -30,7 +30,7 @@
 /// ___
 /// 
 pub trait Parser {
-    fn from_bytes(&mut self, raw_payload: &[u8]);
+    fn from_bytes(&mut self, raw_payload: &[u8], offset_to_change: Option<&mut usize>);
     fn to_bytes(&self) -> Vec<u8>;
     fn to_cb58(&self) -> String;
 }

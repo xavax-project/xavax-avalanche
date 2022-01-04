@@ -17,7 +17,7 @@ ___
 
 ## Some things to point out
 
-* `xavax-avalanche` is currently in very early development, but optimizations and better docs should be available not too long after release! Don't be surprised if there are bugs.
+* `xavax-avalanche` is currently in very early development.
 
 
 * `xavax-avalanche` is fairly simple in principle and is used together with other libraries in the `xavax-api` crate, this includes `xavax-crypto` and `xavax-eth` *(which might be upcoming)*
@@ -26,13 +26,14 @@ ___
 
 ### Feature completeness:
 
-The AVM is about 99% implemented with CreateAssetTx's being the last ones to be currently missing.
+The Avalanche VM (AVM) is about 99% implemented with CreateAssetTx's being the last ones to be currently missing.
 
-The Atmoic EVM tx format is entirely implemented.
+The Atomic EVM format is entirely implemented, this allows importing/exporting to EVM chains such as the C-Chain on avalanche.
 
-The Platform VM (PVM) is currently not implemented.
+The Platform VM (PVM) is entirely implemented, although subnets and custom-chains are still very much in-development
+by ava-labs.
 
-This library is not fully tested yet, although I believe everything works.
+This library is not fully tested yet, although I believe most things work.
 
 I recommend using this library for research purposes only as of today.
 ___
@@ -51,7 +52,7 @@ ___
 At first, add this to your `Cargo.toml` file:
 ```toml
 [dependencies]
-xavax-avalanche = "0.1.0"
+xavax-avalanche = "0.1.1"
 ```
 
 You could create a base transaction, amongst other Tx types:
@@ -89,13 +90,13 @@ let cb58_serialized: String = tx.to_cb58();
 to automatically sign & send the transaction, the `xavax-avalanche` library is a fairly low-level library.
 ___
  ## Changes, Roadmap & Info
- The entire `xavax-api` with its dependencies such as `xavax-avalanche` are very, very early, while I will try to keep the main API fairly consistent and stable, the back-end will get a lot of optimizations in the future. Not to mention the addition of better docs.
+ The entire `xavax-api` with its dependencies such as `xavax-avalanche` ia very, very early, while I will try to keep the main API fairly consistent and stable, the back-end will get a lot of optimizations in the future. Not to mention the addition of better docs.
 
+ More information about the future as well as a roadmap of the api can be found at [xavax](https://api.xavax.net)
 
- More information about the future as well as a roadmap of the api can be found at the [xavax](https://api.xavax.net)
-
- ### Temorary note:
- The API is unfinished at the current time, if you want more information about what the full API will be you can follow me at [twitter](https://twitter.com/DiinkiTheImp), or look at the [xavax introduction](https://kayowo.net/Logs/XavaxIntroduction/) blog.
+ ### More info:
+ The API is unfinished at the current time, the way its designed might change in the future.
+ [twitter](https://twitter.com/DiinkiTheImp).
  ___
 
  ## License
