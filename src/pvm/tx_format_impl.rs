@@ -2,7 +2,7 @@ use std::borrow::Borrow;
 use std::convert::TryInto;
 
 use super::tx_format::*;
-use crate::avm::tx_format::{SECP256K1TransferOutput};
+use crate::avm::tx_format::{SECP256K1TransferOutput, BaseTx};
 use crate::encoding::cb58::encode_cb58;
 use crate::parser::byte_conversion::*;
 use crate::parser::parser_traits::Parser;
@@ -127,7 +127,6 @@ impl Parser for TransferableOutput {
             None => {}
         }
     }
-
     fn to_bytes(&self) -> Vec<u8> {
         let mut result: Vec<u8> = Vec::new();
 
@@ -170,7 +169,6 @@ impl Parser for Stake {
             None => {}
         }
     }
-
     fn to_bytes(&self) -> Vec<u8> {
         let mut result: Vec<u8> = Vec::new();
         for l_o in &self.locked_outs {
@@ -178,7 +176,6 @@ impl Parser for Stake {
         }
         result
     }
-
     fn to_cb58(&self) -> String {
         encode_cb58(&self.to_bytes()[..])
     }
@@ -206,7 +203,6 @@ impl Parser for SubnetAuth {
             None => {}
         }
     }
-
     fn to_bytes(&self) -> Vec<u8> {
         let mut result: Vec<u8> = Vec::new();
         result.extend_from_slice(&self.type_id.to_be_bytes());
@@ -218,7 +214,82 @@ impl Parser for SubnetAuth {
 
         result
     }
+    fn to_cb58(&self) -> String {
+        encode_cb58(&self.to_bytes()[..])
+    }
+}
 
+impl Parser for AddValidatorTx {
+    fn from_bytes(&mut self, raw_payload: &[u8], offset_to_change: Option<&mut usize>) {
+        let mut offset: usize = 0;
+
+        let mut base_tx: BaseTx = BaseTx::default();
+        base_tx.from_bytes(raw_payload, Some(&mut offset));
+        self.base_tx = base_tx;
+
+        let mut validator: Validator = Validator::default();
+        validator.from_bytes(raw_payload[offset..].borrow(), Some(&mut offset));
+
+        let mut stake: Stake = Stake::default();
+        stake.from_bytes(raw_payload[offset..].borrow(), Some(&mut offset));
+
+        let mut rewards_owner: SECP256K1OutputOwnersOutput = SECP256K1OutputOwnersOutput::default();
+        rewards_owner.from_bytes(raw_payload[offset..].borrow(), Some(&mut offset));
+
+        self.shares = extract_u32(raw_payload[offset..=(offset + 3)].borrow());
+        offset += 4;
+
+        match offset_to_change {
+            Some(v) => { *v += offset},
+            None => {}
+        }
+    }
+    fn to_bytes(&self) -> Vec<u8> {
+        let mut result: Vec<u8> = Vec::new();
+        result.extend_from_slice(&self.base_tx.to_bytes());
+        result.extend_from_slice(&self.validator.to_bytes());
+        result.extend_from_slice(&self.stake.to_bytes());
+        result.extend_from_slice(&self.rewards_owner.to_bytes());
+        result.extend_from_slice(&self.shares.to_be_bytes());
+        result
+    }
+    fn to_cb58(&self) -> String {
+        encode_cb58(&self.to_bytes()[..])
+    }
+}
+
+impl Parser for AddSubnetValidatorTx {
+    fn from_bytes(&mut self, raw_payload: &[u8], offset_to_change: Option<&mut usize>) {
+        let mut offset: usize = 0;
+
+        let mut base_tx: BaseTx = BaseTx::default();
+        base_tx.from_bytes(raw_payload, Some(&mut offset));
+        self.base_tx = base_tx;
+
+        let mut validator: Validator = Validator::default();
+        validator.from_bytes(raw_payload[offset..].borrow(), Some(&mut offset));
+
+        self.subnet_id = raw_payload[offset..=(offset + 31)].borrow().to_vec();
+        offset += 32;
+
+        let mut subnet_auth: SubnetAuth = SubnetAuth::default();
+        subnet_auth.from_bytes(raw_payload[offset..].borrow(), Some(&mut offset));
+
+        self.subnet_auth = subnet_auth;
+
+        match offset_to_change {
+            Some(v) => { *v += offset},
+            None => {}
+        }
+    }
+    fn to_bytes(&self) -> Vec<u8> {
+        let mut result: Vec<u8> = Vec::new();
+        result.extend_from_slice(&self.base_tx.to_bytes());
+        result.extend_from_slice(&self.validator.to_bytes());
+        result.extend_from_slice(&self.subnet_id[..]);
+        result.extend_from_slice(&self.subnet_auth.to_bytes());
+        result
+    }
     fn to_cb58(&self) -> String {
         encode_cb58(&self.to_bytes()[..])
     }

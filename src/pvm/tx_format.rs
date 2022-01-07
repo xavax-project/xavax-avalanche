@@ -1,9 +1,8 @@
 use serde::{Deserialize, Serialize};
 
 use crate::avm::tx_format::{
-SECP256K1TransferOutput, BaseTx, ExportTx, ImportTx, TransferableInput};
+SECP256K1TransferOutput, BaseTx, ExportTx, ImportTx, TransferableInput, Credential};
 use crate::primitives::address;
-
 
 /* ----\\\0111100001100001011101100110000101111000_we_are_one\\\ --- NON-IMPORTANT-NOTE:
     the parser_traits implementation for the pvm (platform virtual machine, the P-chain). The P-chain has some
@@ -77,7 +76,7 @@ pub struct TransferableOutput {
 /// 
 ///  * `addresses` is a list of addresses that correspond to the Private keys that can be used to spend this output.
 /// These addresses must be sorted in lexical order.
-#[derive(Serialize, Deserialize, Default, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub struct SECP256K1OutputOwnersOutput {
     pub type_id: u32,
     pub locktime: u64,
@@ -89,7 +88,7 @@ pub struct SECP256K1OutputOwnersOutput {
 /// # Validator 
 /// ___
 /// ## TODO: Docs
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub struct Validator {
     pub node_id: Vec<u8>,
     pub start_time: u64, 
@@ -100,7 +99,7 @@ pub struct Validator {
 /// ___
 /// ## TODO: Docs
 ///
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub struct Stake {
     pub locked_outs: Vec<TransferableOutput>
 }
@@ -109,7 +108,7 @@ pub struct Stake {
 /// ___
 /// ## TODO: Docs
 ///
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub struct SubnetAuth {
     pub type_id: u32, // type id for this is 10 or 0xa
     pub sig_indices: Vec<u32>,
@@ -152,7 +151,7 @@ impl Default for Transactions {
 /// ___
 /// ## TODO: Docs
 ///
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub struct AddValidatorTx {
     pub base_tx: BaseTx,
     pub validator: Validator,
@@ -165,7 +164,7 @@ pub struct AddValidatorTx {
 /// ___
 /// ## TODO: Docs
 ///
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub struct AddSubnetValidatorTx {
     pub base_tx: BaseTx,
     pub validator: Validator,
@@ -177,7 +176,7 @@ pub struct AddSubnetValidatorTx {
 /// ___
 /// ## TODO: Docs
 ///
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub struct AddDelegatorTx {
     pub base_tx: BaseTx,
     pub validator: Validator,
@@ -189,7 +188,7 @@ pub struct AddDelegatorTx {
 /// ___
 /// ## TODO: Docs
 ///
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub struct CreateChainTx {
     pub base_tx: BaseTx,
     pub subnet_id: Vec<u8>,
@@ -204,7 +203,7 @@ pub struct CreateChainTx {
 /// ___
 /// ## TODO: Docs
 ///
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub struct CreateSubnetTx {
     pub base_tx: BaseTx, // typeid is 16 or 0x10
     pub rewards_owner: SECP256K1OutputOwnersOutput
@@ -214,6 +213,7 @@ pub struct CreateSubnetTx {
 /// ___
 /// ## TODO: Docs
 ///
+#[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub struct StakeableLockIn {
     pub type_id: u32, // 21 or 0x15
     pub locktime: u64,
@@ -224,11 +224,21 @@ pub struct StakeableLockIn {
 /// ___
 /// ## TODO: Docs
 ///
+#[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub struct StakeableLockOut {
     pub type_id: u32, // 21 or 0x15
     pub locktime: u64,
     pub transferable_out: TransferableOutput
 }
 
+
+/// # SignedTransaction
+/// ### Todo: Docs, i'm currently busy doing other things docs take too m uch time 
+#[derive(Serialize, Deserialize, Debug, Clone, Default)]
+pub struct SignedTransaction {
+    pub codec_id: u16,
+    pub unsigned_tx: Transactions,
+    pub credentials: Vec<Credential>
+}
 
 
