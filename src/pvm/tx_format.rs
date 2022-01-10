@@ -104,6 +104,15 @@ pub struct Stake {
     pub locked_outs: Vec<TransferableOutput>
 }
 
+/// # FxID 
+/// ___
+/// ## TODO: Docs
+///
+#[derive(Serialize, Deserialize, Debug, Clone, Default)]
+pub struct FxID {
+    pub fx_id: Vec<u8>
+}
+
 /// # SubnetAuth 
 /// ___
 /// ## TODO: Docs
@@ -153,7 +162,7 @@ impl Default for Transactions {
 ///
 #[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub struct AddValidatorTx {
-    pub base_tx: BaseTx,
+    pub base_tx: BaseTx, // TypeID is 0xc or 12
     pub validator: Validator,
     pub stake: Stake,
     pub rewards_owner: SECP256K1OutputOwnersOutput,
@@ -166,7 +175,7 @@ pub struct AddValidatorTx {
 ///
 #[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub struct AddSubnetValidatorTx {
-    pub base_tx: BaseTx,
+    pub base_tx: BaseTx, // typeID is 0xd or 13
     pub validator: Validator,
     pub subnet_id: Vec<u8>,
     pub subnet_auth: SubnetAuth
@@ -178,7 +187,7 @@ pub struct AddSubnetValidatorTx {
 ///
 #[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub struct AddDelegatorTx {
-    pub base_tx: BaseTx,
+    pub base_tx: BaseTx, // typeId is 0xe or 14
     pub validator: Validator,
     pub stake: Stake,
     pub rewards_owner: SECP256K1OutputOwnersOutput,
@@ -190,12 +199,12 @@ pub struct AddDelegatorTx {
 ///
 #[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub struct CreateChainTx {
-    pub base_tx: BaseTx,
+    pub base_tx: BaseTx, // typeId is 0xf or 15
     pub subnet_id: Vec<u8>,
     pub chain_name: Vec<u8>,
-    pub vm_id: Vec<u8>, // How tf do you get a vm id? it better not just be a hash of the vm code I'll scream
-    pub fx_id: Vec<u8>, // what is it, and why is it, soon maybe I'll know...
-    pub genesis_data: Vec<u8>, // not sure what the implementation details for this is, will have to look at the avalanchego node software I suppose...
+    pub vm_id: Vec<u8>, // How do you get a vm id?
+    pub fx_id: Vec<FxID>, // Need better docs on this one
+    pub genesis_data: Vec<u8>, // not sure what the implementation details for this is, needs better docs.
     pub subnet_auth: SubnetAuth,
 }
 
