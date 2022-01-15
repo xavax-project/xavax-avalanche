@@ -26,4 +26,37 @@ tracing = "0.1.29"
 hex-literal = "0.3.3"
 bech32 = "0.8.1"
 bs58 = "0.4.0"
-sha2 = "0.9.8"
+sha2 = "0.10.1"
+hex = "0.4.3"
+lexical-sort = "0.3.1"
+
+tokio = {version = "1.15.0", features = ["rt", "macros"], optional = true}
+reqwest = { version = "0.11.8",default-features = false, features = ["json", "rustls-tls", "gzip", "deflate", "brotli"], optional = true}
+
+
+libsecp256k1 = { version = "0.7.0", optional = true }
+tiny-hderive = { version = "0.3.0", optional = true }
+tiny-bip39 = { version = "0.8.2", optional = true }
+arrayref = { version = "0.3.6", optional = true }
+
+sha3 = { version = "0.10.0", optional = true }
+ripemd = { version = "0.1.0", optional = true }
+blake3 = { version = "1.1.0", optional = true }
+
+
+# Optional part of the API includes the avalanche post request API
+[features]
+request-api = [
+    "tokio",
+    "reqwest"
+]
+# Optional part of the API, includes the cryptography necessary for Avalanche VMs
+crypto-api = [
+    "libsecp256k1",
+    "tiny-hderive",
+    "tiny-bip39",
+    "arrayref",
+    "sha3",
+    "ripemd",
+    "blake3"
+]

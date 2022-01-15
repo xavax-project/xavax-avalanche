@@ -21,12 +21,11 @@ pub fn encode_cb58(input: &[u8]) -> String {
     cb58
 }
 pub fn decode_cb58(input: String) -> Vec<u8> {
-    let result = bs58::decode(input).into_vec().expect("Failed dfoaksdflajksdf kil me");
+    let result = bs58::decode(input).into_vec().expect("Failed");
     
     let check_body = result.split_at(result.len() - 4);
     check_body.0.to_vec()
 }
-
 
 
 ///Take arbitrary byte vector as input, return Sha256 digest of input.

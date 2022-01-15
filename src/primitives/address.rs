@@ -5,8 +5,8 @@ use bech32::*;
 
 #[derive(Serialize, Deserialize, Debug, Default, Clone)]
 pub struct Address {
-    pub address_bytes: [u8; 20],
-    pub serialized_address: String
+    pub address_bytes: Vec<u8>,
+    pub serialized_address: Option<String>
 }
 
 impl Address {
@@ -30,13 +30,13 @@ impl Address {
         match address.chars().nth(1).unwrap() {
             '-' => {
                 let new_address: String = address.clone()[2..].to_string();
-                result.serialized_address = new_address.clone();
+                result.serialized_address = Some(new_address.clone());
                 result.address_bytes = Vec::<u8>::from_base32(&bech32::decode(&new_address)
                 .expect("Incorrect Bech32 Address!").1)
                 .expect("Not Base32!")[..].try_into().expect("Slice with incorrect length!");
             }
             _ => {
-                result.serialized_address = address.clone();
+                result.serialized_address = Some(address.clone());
                 result.address_bytes = Vec::<u8>::from_base32(&bech32::decode(&address)
                 .expect("Incorrect Bech32 Address!").1)
                 .expect("Not Base32!")[..].try_into().expect("Slice with incorrect length!");

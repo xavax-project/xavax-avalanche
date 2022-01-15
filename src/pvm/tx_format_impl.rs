@@ -19,7 +19,7 @@ use crate::primitives::address::Address;
 impl Parser for SECP256K1OutputOwnersOutput {
     fn from_bytes(&mut self, raw_payload: &[u8], offset_to_change: Option<&mut usize>) {
         let mut offset: usize = 0;
-        
+
         self.type_id = extract_u32(raw_payload[offset..=(offset + 3)].borrow());
         offset += 4;
 
@@ -36,7 +36,7 @@ impl Parser for SECP256K1OutputOwnersOutput {
         while index < address_num {
             self.addresses.push(Address{
                 address_bytes: raw_payload[offset..=(offset + 19)].try_into().expect("Slice with incorrect length!"),
-                serialized_address: "Todo".to_string(),
+                serialized_address: None,
             });
             offset += 20;
             index += 1;
@@ -53,6 +53,8 @@ impl Parser for SECP256K1OutputOwnersOutput {
         result.extend_from_slice(&self.type_id.to_be_bytes());
         result.extend_from_slice(&self.locktime.to_be_bytes());
         result.extend_from_slice(&self.threshold.to_be_bytes());
+
+        result.extend_from_slice(&(self.addresses.len() as u32).to_be_bytes());
 
         for i in &self.addresses {
             result.extend_from_slice(&i.address_bytes);
@@ -429,10 +431,12 @@ impl Parser for CreateSubnetTx {
 
         let mut base_tx: BaseTx = BaseTx::default();
         base_tx.from_bytes(raw_payload, Some(&mut offset));
-        self.base_tx = base_tx;
+        self.base_tx = base_tx.clone();
+
 
         let mut rewards_owner: SECP256K1OutputOwnersOutput = SECP256K1OutputOwnersOutput::default();
         rewards_owner.from_bytes(raw_payload[offset..].borrow(), Some(&mut offset));
+        self.rewards_owner = rewards_owner;
         
         match offset_to_change {
             Some(v) => { *v += offset},
@@ -542,9 +546,9 @@ impl Parser for SignedTransaction {
                 self.unsigned_tx = Transactions::CreateChainTx(tx);
             }
             16 => {
-                let mut tx: CreateChainTx = CreateChainTx::default();
+                let mut tx: CreateSubnetTx = CreateSubnetTx::default();
                 tx.from_bytes(&raw_payload[offset..], Some(&mut offset));
-                self.unsigned_tx = Transactions::CreateChainTx(tx);
+                self.unsigned_tx = Transactions::CreateSubnetTx(tx);
             }
             17 => {
                 let mut tx: ImportTx = ImportTx::default();

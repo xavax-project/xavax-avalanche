@@ -107,7 +107,7 @@ impl Parser for SECP256K1TransferOutput {
         while index < address_num {
             self.addresses.push(Address{
                 address_bytes: raw_payload[offset..=(offset + 19)].try_into().expect("Slice with incorrect length!"),
-                serialized_address: "Todo".to_string(),
+                serialized_address: None,
             });
             offset += 20;
             index += 1;
@@ -155,7 +155,7 @@ impl Parser for SECP256K1MintOutput {
         while index < address_num {
             self.addresses.push(Address{
                 address_bytes: raw_payload[offset..=(offset + 19)].try_into().expect("Slice with incorrect length!"),
-                serialized_address: "Todo".to_string(),
+                serialized_address: None,
             });
             offset += 20;
             index += 1;
@@ -204,7 +204,7 @@ impl Parser for NFTMintOutput {
         while index < address_num {
             self.addresses.push(Address{
                 address_bytes: raw_payload[offset..=(offset + 19)].try_into().expect("Slice with incorrect length!"),
-                serialized_address: "Todo".to_string(),
+                serialized_address: None,
             });
             offset += 20;
             index += 1;
@@ -260,7 +260,7 @@ impl Parser for NFTTransferOutput {
         while index < address_num {
             self.addresses.push(Address{
                 address_bytes: raw_payload[offset..=(offset + 19)].try_into().expect("Slice with incorrect length!"),
-                serialized_address: "Todo".to_string(),
+                serialized_address: None,
             });
             offset += 20;
             index += 1;
@@ -309,7 +309,7 @@ impl Parser for Output {
         while index < address_num {
             self.addresses.push(Address{
                 address_bytes: raw_payload[offset..=(offset + 19)].try_into().expect("Slice with incorrect length!"),
-                serialized_address: "Todo".to_string(),
+                serialized_address: None,
             });
             offset += 20;
             index += 1;

@@ -6,3 +6,8 @@ pub mod encoding;
 pub mod evm_atomic;
 
 
+#[cfg(feature="request-api")]
+pub mod api;
+
+#[cfg(feature="crypto-api")]
+pub mod crypto;
