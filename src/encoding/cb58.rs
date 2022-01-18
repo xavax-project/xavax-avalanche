@@ -2,7 +2,7 @@ use sha2::{ Sha256, Digest };
 use bs58;
 
 
-///Encodes given bytes to CB58 Encoding, See avalanche docs...
+///Encodes given bytes to CB58 Encoding.
 pub fn encode_cb58(input: &[u8]) -> String {
 
     //Get Sha256 Checksum
@@ -20,9 +20,9 @@ pub fn encode_cb58(input: &[u8]) -> String {
     let cb58 = bs58::encode(check).into_string();
     cb58
 }
+///Decodes given CB58 to a byte payload.
 pub fn decode_cb58(input: String) -> Vec<u8> {
     let result = bs58::decode(input).into_vec().expect("Failed");
-    
     let check_body = result.split_at(result.len() - 4);
     check_body.0.to_vec()
 }
