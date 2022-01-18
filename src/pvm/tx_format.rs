@@ -87,7 +87,13 @@ pub struct SECP256K1OutputOwnersOutput {
 
 /// # Validator 
 /// ___
-/// ## TODO: Docs
+/// A Validator defines information about the validator & delegator which is added to the network, this data type is
+/// used in `AddValidatorTx` and `AddDelegatorTx`
+/// ___
+/// * `node_id` is 20 bytes which is the node ID of the validator
+/// * `start_time` is the unix time in which the validator starts validating.
+/// * `end_time` is the unix time in which the validator stops validating.
+/// * `weight` contains the amount the validator stakes (in nAvax).
 #[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub struct Validator {
     pub node_id: Vec<u8>,
@@ -97,7 +103,10 @@ pub struct Validator {
 }
 /// # Stake 
 /// ___
-/// ## TODO: Docs
+/// The `Stake` datatype contains a vector of `TransferableOutput`s which are locked for the duration of the staking period, these outputs
+/// are locked for the duration of the staking period, at the end of which the outputs will be refunded to their respective addresses. 
+/// ___
+/// * `locked_outs` A vector of `TransferableOutput` which will be locked for the length of the staking/delegation period.
 ///
 #[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub struct Stake {
@@ -106,7 +115,17 @@ pub struct Stake {
 
 /// # FxID 
 /// ___
-/// ## TODO: Docs
+/// `FxID`, or 'Feature Extension ID' is the ID of the feature extensions running on new/custom chains you can add to a
+/// subnet, an example of an FxID is `secp256k1fx`.
+/// 
+/// ### Note:
+/// The documentation for this is still fairly bare-bones since subnets and custom VMs are still being fleshed-out.
+/// For reference, please visit [the avax reference documentation](https://docs.avax.network/build/references/platform-transaction-serialization)
+/// ___
+/// * `fx_id` The bytes of the FxID.
+/// 
+/// ### Example:
+/// for the `secp256k1fx` feature extension, you'd simply put the bytes of `secp256k1fx`.
 ///
 #[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub struct FxID {
@@ -115,7 +134,14 @@ pub struct FxID {
 
 /// # SubnetAuth 
 /// ___
-/// ## TODO: Docs
+/// `SubnetAuth` contains `sig_indices` and a `type_id` of 0xa (10). SubnetAuth contains the information which define the addresses where
+/// the signatures of which can add a validator to a subnet, this is necessary if the subnet you are adding a validator to isn't open-for-all, 
+/// and requires a signature/permission of some sort.
+/// 
+/// ___
+/// * `type_id` The typeId for `SubnetAuth` is `0xa`, or `10`.
+/// * `sig_indices` sig_indices is a list of unique integers which define the **addresses signing the control signature** to add a valdiator
+/// to the subnet. This array must be ordered low-to-high. 
 ///
 #[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub struct SubnetAuth {
@@ -158,7 +184,16 @@ impl Default for Transactions {
 
 /// # AddValidatorTx 
 /// ___
-/// ## TODO: Docs
+/// `AddValidatorTx` adds a validator to the default network (the X-chain, P-chain, C-chain).
+/// ___
+/// * `base_tx` a base transaction, make sure this tx covers the fees for this type of transaction.
+/// * `validator` a `Validator` which contains the information of the validator validating the network,
+/// such as the start_time and end_time, the weight, and the node_id.
+/// * `stake` the `Stake` which contains TransferableOutputs, which are locked for the entire period the
+/// validator is validating, this is should be equivalent to the Weight in the validator.
+/// * `RewardsOwner` is an `SECP256K1OutputOwners`, which defines the outputs that will contain the validator
+/// rewards by the end of the staking period.
+/// * `shares` The percentage of the reward taken from delegators, multiplied by 10,000.
 ///
 #[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub struct AddValidatorTx {
@@ -171,7 +206,15 @@ pub struct AddValidatorTx {
 
 /// # AddSubnetValidatorTx 
 /// ___
-/// ## TODO: Docs
+/// `AddSubnetValidatorTx` adds validator to a subnetwork within avalanche. Since some subnets are permissioned (requiring signatures from special keys
+/// in order do add a validator), a `SubnetAuth` may be necessary.
+/// ___
+/// * `base_tx` a base transaction, make sure this tx covers the fees for this type of transaction.
+/// * `validator` a `Validator` which contains the information of the validator validating the network,
+/// such as the start_time and end_time, the weight, and the node_id.
+/// * `subnet_id` A 32 byte Subnet ID.
+/// * `subnet_auth` the `SubnetAuth` which defines the addresses signing the "control signature" to add a validator to the subnet. I am unsure of the
+/// exact implementation details of this, the "control signature" isn't defined anywhere specifically in the documentation as of right now.
 ///
 #[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub struct AddSubnetValidatorTx {
@@ -183,8 +226,17 @@ pub struct AddSubnetValidatorTx {
 
 /// # AddDelegatorTx 
 /// ___
-/// ## TODO: Docs
-///
+/// `AddDelegatorTx` adds a delegator to a validator validating the default network (the X-chain, P-chain, C-chain).
+/// ___
+/// * `base_tx` a base transaction, make sure this tx covers the fees for this type of transaction.
+/// * `validator` a `Validator` which contains the information of the validator the delegator will delegate to, or the *delegatee* as its
+/// ever so kindly refered as in the official avalanche documentation which desperately needs a better reference regarding subnets...
+/// * `stake` the `Stake` which contains TransferableOutputs, which are locked for the entire period the
+/// validator is validating, this is should be equivalent to the Weight in the validator.
+/// * `RewardsOwner` is an `SECP256K1OutputOwners`, which defines the outputs that will contain the validator
+/// rewards by the end of the staking period.
+/// * `shares` The percentage of the reward taken from delegators, multiplied by 10,000.
+/// 
 #[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub struct AddDelegatorTx {
     pub base_tx: BaseTx, // typeId is 0xe or 14
@@ -195,7 +247,16 @@ pub struct AddDelegatorTx {
 
 /// # CreateChainTx 
 /// ___
-/// ## TODO: Docs
+/// `CreateChainTx` creates a chain and adds it to a subnet.
+/// ___
+/// * `base_tx` a base transaction, make sure this tx covers the fees for this type of transaction.
+/// * `subnet_id` the ID of the subnet which will validate this blockchain.
+/// * `chain_name` a human readable name for the chain, which doesn't have to be unique.
+/// * `vm_id` the ID of the Virtual Machine running on the new chain *this can be AVM, TimestampVM, EVM? The documentation needs
+/// way more detail on this subject.*
+/// * `fx_id` An array of the FxIDs running on this new chain, such as `secp256k1fx`.
+/// * `genesis_data` A byte-representation of genesis state of the new chain.
+/// * `SubnetAuth` Authorizes this blockchain to be added to the subnet. 
 ///
 #[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub struct CreateChainTx {
@@ -210,7 +271,13 @@ pub struct CreateChainTx {
 
 /// # CreateSubnetTx 
 /// ___
-/// ## TODO: Docs
+/// Creates a subnet which could potentially validate any arbitrary amount of chains all running different Virtual machines.
+/// ___
+/// * `base_tx` a base transaction with the type_id set to 16 (0x10), make sure this tx covers the fees for this type of transaction.
+/// * `rewards_owner` an `SECP256K1OutputOwnersOutput`.
+/// ### Note
+/// The docs are extremely scarce regarding this Tx, why is there a SECP256K1OutputOwnersOutput? How do permissioned subnets work? I
+/// can't write that in these docs until further experimentation.
 ///
 #[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub struct CreateSubnetTx {
@@ -220,7 +287,11 @@ pub struct CreateSubnetTx {
 
 /// # StakeableLockIn 
 /// ___
-/// ## TODO: Docs
+/// `StakeableLockIn` is a staked and locked input. The StakeableLockIn can only fund StakeableLockOuts with the same address until its locktime has passed.
+/// ___
+/// * `type_id` the type ID for this input is 21, or `0x15`.
+/// * `locktime` is a long that contains the unix timestamp before which the input can be consumed only to stake. The unix timestamp is specific to the second.
+/// * `transferable_in` is a transferable input object which contains the input which is locked & staked.
 ///
 #[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub struct StakeableLockIn {
@@ -231,7 +302,11 @@ pub struct StakeableLockIn {
 
 /// # StakeableLockOut 
 /// ___
-/// ## TODO: Docs
+/// A StakeableLockOut is an output that is locked until its locktime, but can be staked in the meantime.
+/// ___
+/// * `type_id` the type ID for this input is 22, or `0x16`.
+/// * `locktime` is a long that contains the unix timestamp before which the input can be consumed only to stake. The unix timestamp is specific to the second.
+/// * `transferable_out` is a transferable output object.
 ///
 #[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub struct StakeableLockOut {
@@ -242,7 +317,14 @@ pub struct StakeableLockOut {
 
 
 /// # SignedTransaction
-/// ### Todo: Docs, i'm currently busy doing other things docs take too m uch time 
+/// ___
+/// A signed transaction is any transaction with the addition of an array of credentials, which contain the signatures
+/// which sign the transactions.
+/// ___
+/// * `codec_id` currently always has to be `0`.
+/// * `unsigned_tx` Any arbitrary platform-vm transaction, such as `CreateSubnetTx` or `AddValidatorTx`.
+/// * `credentials` A vector of credentials, each credential will be paired with the input in the same index as the
+/// credential.
 #[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub struct SignedTransaction {
     pub codec_id: u16,

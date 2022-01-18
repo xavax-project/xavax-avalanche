@@ -24,7 +24,6 @@ impl Address {
     /// let address: Address = Address::from_bech32_address("X-fuji1zcm8wjm8swx7c9hpd2mvlt9jrwyv82rpmrucwc".to_string());
     /// 
     /// ```
-    /// 
     pub fn from_bech32_address(address: String) -> Self{
         let mut result: Address = Address::default();
         match address.chars().nth(1).unwrap() {
@@ -49,15 +48,14 @@ impl Address {
 #[cfg(test)]
 mod tests {
     use bech32::ToBase32;
-
     use super::Address;
 
     #[test]
     fn address_test() {
         let address: Address = Address::from_bech32_address("X-fuji1zcm8wjm8swx7c9hpd2mvlt9jrwyv82rpmrucwc".to_string());
-        assert_eq!(address.serialized_address, bech32::encode("fuji", &address.address_bytes.to_base32(), bech32::Variant::Bech32).unwrap());
+        assert_eq!(address.serialized_address.expect("No Address"), bech32::encode("fuji", &address.address_bytes.to_base32(), bech32::Variant::Bech32).expect("err"));
 
         let address: Address = Address::from_bech32_address("fuji1zcm8wjm8swx7c9hpd2mvlt9jrwyv82rpmrucwc".to_string());
-        assert_eq!(address.serialized_address, bech32::encode("fuji", &address.address_bytes.to_base32(), bech32::Variant::Bech32).unwrap());
+        assert_eq!(address.serialized_address.expect("No Address"), bech32::encode("fuji", &address.address_bytes.to_base32(), bech32::Variant::Bech32).unwrap());
     }
 }
