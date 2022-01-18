@@ -11,7 +11,7 @@
            |-tx_format_impl.rs   <----- This is the Parser implementation for the avm tx_format.
 
     
-    The same applies for the p_chain(pvm) and c_chain_atomic. The coreeth implementation uses a completely different
+    The same applies for the p_chain(pvm) and evm_atomic. The coreeth implementation uses a completely different
     encoding and therefore isn't even included in this entire Crate. For that use the xavax_eth(I think that's what I'm naming it) crate which implements
     data-structs for eth transactions and encoding/decoding/parsing for coreeth as well. 
 */
@@ -30,6 +30,10 @@
 /// ___
 /// 
 pub trait Parser {
+    /// # from_bytes
+    /// ___
+    /// Converts a raw byte-payload into a rust data-type.
+    /// ___
     fn from_bytes(&mut self, raw_payload: &[u8], offset_to_change: Option<&mut usize>);
     fn to_bytes(&self) -> Vec<u8>;
     fn to_cb58(&self) -> String;

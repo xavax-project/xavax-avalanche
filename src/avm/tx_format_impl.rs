@@ -12,8 +12,15 @@ use crate::primitives::address::Address;
 
     This module will be a fair amount of code but don't be scared! It all does the same thing but for different
     data types...
-*/
 
+    The reason this isn't split to many modules/files is due to me finding it more convenient having all the parser 
+    implementations for each data type in the same file, but naturally this could change in the future. For now, this
+    is the case.
+    
+    The parser from_bytes() can optionally take in an offset, I find that this is a superior alternative to using a
+    Context object keeping track of the current offset if an object that needs to be parsed has multiple objects within
+    which require that, (the parsers I've seen tend to do that).
+*/
 
 
 /* _________________________________________________ Outputs _________________________________________________ */
@@ -751,7 +758,7 @@ impl Parser for NFTTransferOp {
     }
 }
 
-/* _________________________________________________ Unsigned Transaction _________________________________________________ */
+/* _________________________________________________ Unsigned Transactions _________________________________________________ */
 
 impl Parser for BaseTx {
     fn from_bytes(&mut self, raw_payload: &[u8], offset_to_change: Option<&mut usize>) {
@@ -1052,6 +1059,10 @@ impl Parser for SignedTransaction {
     }
 }
 
+/* _________________________________________________ Tests _________________________________________________ */
+
+// Todo: !moar tests!
+
 #[cfg(test)]
 mod tests {
     use crate::avm::tx_format::*;
@@ -1079,8 +1090,7 @@ mod tests {
         assert_eq!(tx.to_bytes(), tx_bytes);
         
         let cb_58_encoded_tx = "111111111UgbbpcKWRe4kWhsrY3aAUd2xUwYYrjWfeSp6g8b9uaE5J35JTCgpYStYfDZp6cGKXv5MrqGWc7urASV1WAusjRvfBwnnmS2SpKoPj6nLbRXJGU636xg3L8Z2kvrPdqaCiQmcN8jbFx1q6Utqy8bp9SQWcGXLb5oBGZspQqL7RorBAbvWmmSG21hg2ewFTd5s4oxS8BFEgQWLxYBR3PapWKR8tpB1PXcMJKaqkHhoXZiN5BDf75bVqmv8kTdFCiKXWQXF6T4f6mZF6gdLzeFuEyYzJNgqTWiVimqLNkrjUGmFEd4zttdFuWJWwomJygTMsn65bD3VgGw6S5bC769K7FqRnziTYhyPDvPb6ucsKXVkGwdZNL6hZDANBuSHfzjWSzGLEvPDcByjG47ZXSDtzrJ5zQUEyd9NwxoAwPjwFBtm8yi1doKu8dZCKPCfr3UgvAmxFc2STVud5wvBS49oZ2assBPqzEP2X4EBGWtSj8mR2F4bJFLM3U5gXhDfne".to_string();
-        let a  = decode_cb58(cb_58_encoded_tx.clone());
-        //assert_eq!(tx.to_cb58(), cb_58_encoded_tx);
+        assert_eq!(tx.to_cb58(), cb_58_encoded_tx);
     }
 
 

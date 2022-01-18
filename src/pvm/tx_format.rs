@@ -331,5 +331,3 @@ pub struct SignedTransaction {
     pub unsigned_tx: Transactions,
     pub credentials: Vec<Credential>
 }
-
-

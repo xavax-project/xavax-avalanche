@@ -11,10 +11,24 @@ use crate::primitives::address::Address;
 /* ----\\\0111100001100001011101100110000101111000_we_are_one\\\ --- NON-IMPORTANT-NOTE:
     the parser_traits implementation for the pvm, read the note in parser_traits.rs for more info.
 
+    The reason the PVM transaction format is completely seperate to the AVM tx format is that there
+    are some extra data-types, and some which don't exist. Technically I could merge the two modules, but
+    I find seperating things this way to make things clearer.
+
+    Besides, even though some Txs might exist for both VMs, they usually still have different type_ids, such
+    as Export & Import transactions.
+
+    Those transactions aren't defined twice in the pvm::tx_format module, but instead imported from respective the AVM module.
+
+    I feel like this is the optimal solution, it might add some confusion, the API may change in the future slightly if this
+    design changes in-favor of a better one.
+
     The platform vm seems to be in a state of development, there is little clarity on what some things
     are and how they are used, nontheless the parser should do its job correctly unless I fked something
     up...
 */
+
+/* _________________________________________________ Outputs _________________________________________________ */
 
 impl Parser for SECP256K1OutputOwnersOutput {
     fn from_bytes(&mut self, raw_payload: &[u8], offset_to_change: Option<&mut usize>) {
@@ -62,59 +76,6 @@ impl Parser for SECP256K1OutputOwnersOutput {
 
         result
     }
-    fn to_cb58(&self) -> String {
-        encode_cb58(&self.to_bytes()[..])
-    }
-}
-
-impl Parser for FxID {
-    fn from_bytes(&mut self, raw_payload: &[u8], offset_to_change: Option<&mut usize>) {
-        let mut offset: usize = 0;
-        self.fx_id = raw_payload[offset..(offset + 31)].to_vec();
-        offset += 32;
-        match offset_to_change {
-            Some(v) => { *v += offset},
-            None => {}
-        }
-    }
-    fn to_bytes(&self) -> Vec<u8> {
-        let mut result: Vec<u8> = Vec::new();
-        result.extend_from_slice(&self.fx_id);
-        result
-    }
-    fn to_cb58(&self) -> String {
-        encode_cb58(&self.to_bytes()[..])
-    }
-}
-
-impl Parser for Validator {
-    fn from_bytes(&mut self, raw_payload: &[u8], offset_to_change: Option<&mut usize>) {
-        let mut offset: usize = 0;
-
-        self.node_id = raw_payload[offset..=(offset + 19)].try_into().expect("Slice with incorrect length!");
-        offset += 20;
-        self.start_time = extract_u64(raw_payload[offset..=(offset + 7)].borrow());
-        offset += 8;
-        self.endtime = extract_u64(raw_payload[offset..=(offset + 7)].borrow());
-        offset += 8;
-        self.weight = extract_u64(raw_payload[offset..=(offset + 7)].borrow());
-        offset += 8;
-
-        match offset_to_change {
-            Some(v) => { *v += offset},
-            None => {}
-        }
-    }
-
-    fn to_bytes(&self) -> Vec<u8> {
-        let mut result: Vec<u8> = Vec::new();
-        result.extend_from_slice(&self.node_id);
-        result.extend_from_slice(&self.start_time.to_be_bytes());
-        result.extend_from_slice(&self.endtime.to_be_bytes());
-        result.extend_from_slice(&self.weight.to_be_bytes());
-        result
-    }
-
     fn to_cb58(&self) -> String {
         encode_cb58(&self.to_bytes()[..])
     }
@@ -170,10 +131,70 @@ impl Parser for TransferableOutput {
     }
 }
 
-impl Parser for Stake {
+/* _________________________________________________ FxID _________________________________________________ */
+
+impl Parser for FxID {
+    fn from_bytes(&mut self, raw_payload: &[u8], offset_to_change: Option<&mut usize>) {
+        let mut offset: usize = 0;
+        self.fx_id = raw_payload[offset..(offset + 31)].to_vec();
+        offset += 32;
+        match offset_to_change {
+            Some(v) => { *v += offset},
+            None => {}
+        }
+    }
+    fn to_bytes(&self) -> Vec<u8> {
+        let mut result: Vec<u8> = Vec::new();
+        result.extend_from_slice(&self.fx_id);
+        result
+    }
+    fn to_cb58(&self) -> String {
+        encode_cb58(&self.to_bytes()[..])
+    }
+}
+
+
+/* _________________________________________________ Validator _________________________________________________ */
+
+impl Parser for Validator {
     fn from_bytes(&mut self, raw_payload: &[u8], offset_to_change: Option<&mut usize>) {
         let mut offset: usize = 0;
 
+        self.node_id = raw_payload[offset..=(offset + 19)].try_into().expect("Slice with incorrect length!");
+        offset += 20;
+        self.start_time = extract_u64(raw_payload[offset..=(offset + 7)].borrow());
+        offset += 8;
+        self.endtime = extract_u64(raw_payload[offset..=(offset + 7)].borrow());
+        offset += 8;
+        self.weight = extract_u64(raw_payload[offset..=(offset + 7)].borrow());
+        offset += 8;
+
+        match offset_to_change {
+            Some(v) => { *v += offset},
+            None => {}
+        }
+    }
+
+    fn to_bytes(&self) -> Vec<u8> {
+        let mut result: Vec<u8> = Vec::new();
+        result.extend_from_slice(&self.node_id);
+        result.extend_from_slice(&self.start_time.to_be_bytes());
+        result.extend_from_slice(&self.endtime.to_be_bytes());
+        result.extend_from_slice(&self.weight.to_be_bytes());
+        result
+    }
+
+    fn to_cb58(&self) -> String {
+        encode_cb58(&self.to_bytes()[..])
+    }
+}
+
+/* _________________________________________________ Stake _________________________________________________ */
+
+
+impl Parser for Stake {
+    fn from_bytes(&mut self, raw_payload: &[u8], offset_to_change: Option<&mut usize>) {
+        let mut offset: usize = 0;
 
         let output_len: u32 = extract_u32(raw_payload[offset..=(offset + 3)].borrow());
         offset += 4;
@@ -202,6 +223,8 @@ impl Parser for Stake {
         encode_cb58(&self.to_bytes()[..])
     }
 }
+
+/* _________________________________________________ Subnet Auth _________________________________________________ */
 
 impl Parser for SubnetAuth {
     fn from_bytes(&mut self, raw_payload: &[u8], offset_to_change: Option<&mut usize>) {
@@ -240,6 +263,7 @@ impl Parser for SubnetAuth {
         encode_cb58(&self.to_bytes()[..])
     }
 }
+/* _________________________________________________ Unsigned Transactions _________________________________________________ */
 
 impl Parser for AddValidatorTx {
     fn from_bytes(&mut self, raw_payload: &[u8], offset_to_change: Option<&mut usize>) {
@@ -454,6 +478,8 @@ impl Parser for CreateSubnetTx {
     }
 }
 
+/* _________________________________________________ Stakeable Outs and Ins _________________________________________________ */
+
 impl Parser for StakeableLockIn {
     fn from_bytes(&mut self, raw_payload: &[u8], offset_to_change: Option<&mut usize>) {
         let mut offset: usize = 0;
@@ -512,6 +538,9 @@ impl Parser for StakeableLockOut {
         encode_cb58(&self.to_bytes()[..])
     }
 }
+
+/* _________________________________________________ Signed Transaction _________________________________________________ */
+
 impl Parser for SignedTransaction {
     fn from_bytes(&mut self, raw_payload: &[u8], offset_to_change: Option<&mut usize>) {
         let mut offset: usize = 0;
@@ -623,4 +652,6 @@ impl Parser for SignedTransaction {
     }
 }
 
+
+// Todo: tests :p
 
