@@ -209,7 +209,8 @@ pub struct UTXO {
 /// ___
 /// 
 /// * `output_consumer_owners` is a list of addresses that correspond to the addresses that own the Output that this
-/// Input consumes! This is purely a helper data-type for the XAVAX-API and NOT Part of the message payload!
+/// Input consumes! This is purely a helper data-type and NOT Part of the message payload! The existence of this data-type
+/// makes it simpler to create find the addresses which need to sign the transaction.
 /// 
 /// * `tx_id` is a 32 byte array that defines which transaction this Input is consuming an Output from.
 /// TxId's are the SHA256 Hash of the bytes of the Signed transaction.

@@ -1,23 +1,23 @@
 # xavax-avalanche
 [![Test Status](https://github.com/diinki/xavax-avalanche/workflows/Rust/badge.svg?event=push)](https://github.com/diinki/xavax-avalanche/actions)
 
-A Rust implementation of the entire Avalanche network transaction format
-including serialization, with optional Features which can add:
+### A Rust implementation of the entire Avalanche network transaction format
+including serialization & optional Features which add:
 
 * Transaction Signing
-* Avalanche and EVM cryptography (Creating addresses and key-chains).
-* The Avalanche node JSONRPC API (get info from nodes, or submit transactions!)
+* Avalanche and EVM cryptography (Bech32 addresses, managing Keychains, BIP39 & BIP44 for HD wallets and mnemonic phrases, etc).
+* The Entire Avalanche node JSONRPC API (get info from nodes, or submit transactions!)
 
-This SDK is an all-in-one Crate which can help you build anything your heart desires for the avalanche network! (wip).
+### This SDK is an all-in-one Crate which can help you build anything your heart desires on-top of the avalanche network! (wip).
 
-See official xavax docs for the xavax-avalanche SDK at [the xavax docs page](https://docs.xavax.io).
+### See documentation at [docs.xavax.io](https://docs.xavax.io).
 ___
-## What can xavax-avalanche do?
+## Details: What can xavax-avalanche do?
 
 **With no features selected, this crate can:**
 
 Create transactions, or any data-type defined in the [AVM](https://docs.avax.network/build/references/avm-transaction-serialization#signed-transaction),  [PVM](https://docs.avax.network/build/references/platform-transaction-serialization) and Atomic EVM transaction format for avalanche.
-You can also Parse from a raw encoded payload to a data-type and back!
+You can also Parse from a raw encoded payload *(CB58 encoding, which is the encoding used in the avalanche network)* to a Rust data-type and back!
 
 
 **`request-api` feature:**
@@ -25,22 +25,25 @@ You can also Parse from a raw encoded payload to a data-type and back!
 The `request-api` feature adds support for the Avalanche JSON RPC API, and also
 allows posting the https request and get responses accordingally, with this feature, you can indeed do anything from get the current transaction-fees, to sending a raw transaction to the network!
 
+The request-api features the AVM & PVM json-rpc, as well as Ortelius indexer RPC. 
+
 **`crypto-api` feature:**
 
-The `crypto-api` feature adds Keychain creation for Avalanche and the EVM! As well as the secp256k1 cryptographic primitives, which allows signing transactions.
+The `crypto-api` feature adds Keychain creation for Avalanche and the EVM, as well as signing & verifying! That means secp256k1, SHA256, KECCAK256, and RIPEMD160.
 
-This feature allows you to create keychains from bip39 seed-phrases, and also allows generating new seed phrases entirely (cryptographically secure).
 
-The feature also adds "interoperable-message" signing, which allows the user to sign messages which aren't transactions safely.
+This feature allows you to create keychains from bip39 seed-phrases, and also allows generating new seed phrases *(with a cryptographically secure source of entropy, crypto-rng).*
 
 ### With All features, you could:
-Create an avalanche wallet! Or perhaps create a game of some-sort utilizing avalanche! 
+> Create an avalanche wallet! Or perhaps create a game of some-sort utilizing avalanche! 
 
-You could compile to WASM, and use the WASM for web-related reasons!
+> You could compile to WASM, and use the compiled WASM for web-related reasons!
 
-You could also create a subnet on avalanche as well as adding a custom blockchain, what that blockchain is for is something you and your imagination will answer...
+> You could also create a subnet on avalanche as well as adding a custom blockchain, what that blockchain is for is something you and your imagination will answer...
 
-Create transactions, Sign them, and Send them.
+> You could use the Avalanche JSONRPC and get any info you could ever want from avalanche nodes! 
+
+### Create transactions, Sign them, and Send them!
 ___
 
 ## Some things to point out
@@ -65,7 +68,7 @@ ___
 The documentation will be located at:
 
 * [`xavax-api docs`](https://docs.xavax.io) - Custom, better documentation.
-* [`docs.rs`](docs.rs/xavax-avalanche/0.1.0-beta0) - Standard rust doc documentation
+* [`docs.rs`](docs.rs/xavax-avalanche/) - Standard rust doc documentation
 
 ___
 
@@ -79,13 +82,13 @@ Add this line to your `Cargo.toml` file:
 xavax-avalanche = "0.1.0"
 ```
 
-If you want the extra features (which are very recommended) file:
+If you want the extra features (which are very recommended):
 ```toml
 [dependencies]
-xavax-avalanche = { version = "0.1.0", features = ["request-api", "crypto-api"]
+xavax-avalanche = { version = "0.1.0", features = ["request-api", "crypto-api"] }
 ```
 
-You could create a base transaction, amongst other Tx types:
+You could create a BaseTx (a default transaction), amongst other Tx types:
 ```rust
 use xavax_avalanche::avm::tx_format::*;
 
@@ -122,19 +125,18 @@ tx.from_bytes(&tx_bytes);
 
 ___
  ## Changes, Roadmap & Info
- The crate is really early, so docs, more tests, etc are in development, please feel free to follow me or xavax, or create github issues or pull requests, etc!
+ The crate is really early; docs, more tests, etc are in development, please feel free to follow me or xavax, or create github issues or pull requests!
 
- Information about the API can always be found at [xavax](https://api.xavax.net)
+ Information about the API can always be found at the xavax website.
 
- ### Follow
- The API is unfinished at the current time, the way its designed might change in the future.
- [twitter](https://twitter.com/DiinkiTheImp).
- [xavax](https://www.xavax.io).
+
+ find more info on [xavax.io](https://www.xavax.io) and  [twitter](https://twitter.com/DiinkiTheImp)
 
  ___
 
  ## License
  xavax-avalanche is distributed with the permissive [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0.txt) License <3
+ ___
 
- ### Have a good time, all the time.
+ ### Now go have a good time, all the time...
  

@@ -106,8 +106,8 @@ pub trait MnemonicKeypair {
 /// public-key recovery. Avalanche virtual machine compatible.
 /// 
 /// Make sure to SHA256 the message before passing it into this function!
-pub fn secp256k1_sign_rsv(private_key_bytes: [u8; 32], message: &[u8]) -> [u8; 65] {
-    let private_key= libsecp256k1::SecretKey::parse_slice(&private_key_bytes).expect("Incorrect private key!");
+pub fn secp256k1_sign_rsv(private_key_bytes: &[u8; 32], message: &[u8]) -> [u8; 65] {
+    let private_key= libsecp256k1::SecretKey::parse_slice(private_key_bytes).expect("Incorrect private key!");
 
     let mut signature: (Signature, RecoveryId) = libsecp256k1::sign(&libsecp256k1::Message::parse_slice(message).expect("EXPECTED SHA256 OF MESSAGE PAYLOAD! WRONG MESSAGE SIZE..."), &private_key);
     
@@ -134,8 +134,8 @@ pub fn secp256k1_sign_rsv(private_key_bytes: [u8; 32], message: &[u8]) -> [u8; 6
 /// 
 /// The V value is also not 0 or 1, but not 27 or 28, same principle: It allows for quick
 /// public key recovery.
-pub fn secp256k1_sign_vsr(private_key_bytes: [u8; 32], message: &[u8]) -> [u8; 65] {
-    let private_key= libsecp256k1::SecretKey::parse_slice(&private_key_bytes).expect("Incorrect private key!");
+pub fn secp256k1_sign_vsr(private_key_bytes: &[u8; 32], message: &[u8]) -> [u8; 65] {
+    let private_key= libsecp256k1::SecretKey::parse_slice(private_key_bytes).expect("Incorrect private key!");
 
     let mut signature: (Signature, RecoveryId) = libsecp256k1::sign(&libsecp256k1::Message::parse_slice(message).expect("EXPECTED SHA256 OF MESSAGE PAYLOAD! WRONG MESSAGE SIZE..."), &private_key);
     

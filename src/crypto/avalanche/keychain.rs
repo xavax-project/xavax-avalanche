@@ -138,7 +138,7 @@ impl Keys {
 impl Signing for Keys {
     fn sign(private_key: &Vec<u8>, data_preimage: Vec<u8>) -> Vec<u8> {
         let hashed_data = get_sha256_hash(&data_preimage);
-        secp256k1_sign_rsv(private_key.clone().try_into().expect("Expeded 32 bytes!"),
+        secp256k1_sign_rsv(private_key[..].try_into().expect("Expeded 32 bytes!"),
          &hashed_data).to_vec()
     }
 
