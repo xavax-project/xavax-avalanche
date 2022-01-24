@@ -49,7 +49,7 @@ impl TxSigner for avm::tx_format::Transactions {
             avm::tx_format::Transactions::BaseTx(base_tx) => {
                 //Add the transaction bytes to the bytes array that we'll sign.
                 bytes_to_sign.extend_from_slice(&base_tx.to_bytes());
-
+                signed_tx.unsigned_tx = avm::tx_format::Transactions::BaseTx(base_tx.clone());
                 //Go through every input in the tx.
                 for input in &base_tx.inputs {
                     if &input.output_consumer_owners.len() <= &0 {
@@ -80,7 +80,7 @@ impl TxSigner for avm::tx_format::Transactions {
             avm::tx_format::Transactions::CreateAssetTx(create_asset_tx) => {
                 //Add the transaction bytes to the bytes array that we'll sign.
                 bytes_to_sign.extend_from_slice(&create_asset_tx.to_bytes());
-
+                signed_tx.unsigned_tx = avm::tx_format::Transactions::CreateAssetTx(create_asset_tx.clone());
                 //Go through every input in the tx.
                 for input in &create_asset_tx.base_tx.inputs {
                     if &input.output_consumer_owners.len() <= &0 {
@@ -111,7 +111,7 @@ impl TxSigner for avm::tx_format::Transactions {
             avm::tx_format::Transactions::OperationTx(op_tx) => {
                 //Add the transaction bytes to the bytes array that we'll sign.
                 bytes_to_sign.extend_from_slice(&op_tx.to_bytes());
-
+                signed_tx.unsigned_tx = avm::tx_format::Transactions::OperationTx(op_tx.clone());
                 //Go through every input in the tx.
                 for input in &op_tx.base_tx.inputs {
                     if &input.output_consumer_owners.len() <= &0 {
@@ -142,7 +142,7 @@ impl TxSigner for avm::tx_format::Transactions {
             avm::tx_format::Transactions::ExportTx(export_tx) => {
                 //Add the transaction bytes to the bytes array that we'll sign.
                 bytes_to_sign.extend_from_slice(&export_tx.to_bytes());
-
+                signed_tx.unsigned_tx = avm::tx_format::Transactions::ExportTx(export_tx.clone());
                 //Go through every input in the tx.
                 for input in &export_tx.base_tx.inputs {
                     if &input.output_consumer_owners.len() <= &0 {
@@ -173,7 +173,7 @@ impl TxSigner for avm::tx_format::Transactions {
             avm::tx_format::Transactions::ImportTx(import_tx) => {
                 //Add the transaction bytes to the bytes array that we'll sign.
                 bytes_to_sign.extend_from_slice(&import_tx.to_bytes());
-
+                signed_tx.unsigned_tx = avm::tx_format::Transactions::ImportTx(import_tx.clone());
                 //Go through every input in the tx.
                 for input in &import_tx.base_tx.inputs {
                     if &input.output_consumer_owners.len() <= &0 {
@@ -222,7 +222,7 @@ impl TxSigner for pvm::tx_format::Transactions {
         trace!("Attempting to sign Transaction with: {} Given Keypairs.", required_keypairs.len());
 
         
-        let mut signed_tx: avm::tx_format::SignedTransaction = avm::tx_format::SignedTransaction::default();
+        let mut signed_tx: pvm::tx_format::SignedTransaction = pvm::tx_format::SignedTransaction::default();
         signed_tx.codec_id = 0;
         
         let mut bytes_to_sign: Vec<u8> = vec![];
@@ -232,7 +232,7 @@ impl TxSigner for pvm::tx_format::Transactions {
             pvm::tx_format::Transactions::BaseTx(base_tx) => {
                 //Add the transaction bytes to the bytes array that we'll sign.
                 bytes_to_sign.extend_from_slice(&base_tx.to_bytes());
-
+                signed_tx.unsigned_tx = pvm::tx_format::Transactions::BaseTx(base_tx.clone());
                 //Go through every input in the tx.
                 for input in &base_tx.inputs {
                     if &input.output_consumer_owners.len() <= &0 {
@@ -263,7 +263,7 @@ impl TxSigner for pvm::tx_format::Transactions {
             pvm::tx_format::Transactions::ExportTx(export_tx) => {
                 //Add the transaction bytes to the bytes array that we'll sign.
                 bytes_to_sign.extend_from_slice(&export_tx.to_bytes());
-
+                signed_tx.unsigned_tx = pvm::tx_format::Transactions::ExportTx(export_tx.clone());
                 //Go through every input in the tx.
                 for input in &export_tx.base_tx.inputs {
                     if &input.output_consumer_owners.len() <= &0 {
@@ -294,7 +294,7 @@ impl TxSigner for pvm::tx_format::Transactions {
             pvm::tx_format::Transactions::ImportTx(import_tx) => {
                 //Add the transaction bytes to the bytes array that we'll sign.
                 bytes_to_sign.extend_from_slice(&import_tx.to_bytes());
-
+                signed_tx.unsigned_tx = pvm::tx_format::Transactions::ImportTx(import_tx.clone());
                 //Go through every input in the tx.
                 for input in &import_tx.base_tx.inputs {
                     if &input.output_consumer_owners.len() <= &0 {
@@ -325,7 +325,7 @@ impl TxSigner for pvm::tx_format::Transactions {
             pvm::tx_format::Transactions::AddValidatorTx(add_validator_tx) => {
                 //Add the transaction bytes to the bytes array that we'll sign.
                 bytes_to_sign.extend_from_slice(&add_validator_tx.to_bytes());
-
+                signed_tx.unsigned_tx = pvm::tx_format::Transactions::AddValidatorTx(add_validator_tx.clone());
                 //Go through every input in the tx.
                 for input in &add_validator_tx.base_tx.inputs {
                     if &input.output_consumer_owners.len() <= &0 {
@@ -356,7 +356,7 @@ impl TxSigner for pvm::tx_format::Transactions {
             pvm::tx_format::Transactions::AddSubnetValidatorTx(add_subnet_validator_tx) => {
                 //Add the transaction bytes to the bytes array that we'll sign.
                 bytes_to_sign.extend_from_slice(&add_subnet_validator_tx.to_bytes());
-
+                signed_tx.unsigned_tx = pvm::tx_format::Transactions::AddSubnetValidatorTx(add_subnet_validator_tx.clone());
                 //Go through every input in the tx.
                 for input in &add_subnet_validator_tx.base_tx.inputs {
                     if &input.output_consumer_owners.len() <= &0 {
@@ -387,7 +387,7 @@ impl TxSigner for pvm::tx_format::Transactions {
             pvm::tx_format::Transactions::AddDelegatorTx(add_delegator_tx) => {
                 //Add the transaction bytes to the bytes array that we'll sign.
                 bytes_to_sign.extend_from_slice(&add_delegator_tx.to_bytes());
-
+                signed_tx.unsigned_tx = pvm::tx_format::Transactions::AddDelegatorTx(add_delegator_tx.clone());
                 //Go through every input in the tx.
                 for input in &add_delegator_tx.base_tx.inputs {
                     if &input.output_consumer_owners.len() <= &0 {
@@ -418,7 +418,7 @@ impl TxSigner for pvm::tx_format::Transactions {
             pvm::tx_format::Transactions::CreateChainTx(create_chain_tx) => {
                 //Add the transaction bytes to the bytes array that we'll sign.
                 bytes_to_sign.extend_from_slice(&create_chain_tx.to_bytes());
-
+                signed_tx.unsigned_tx = pvm::tx_format::Transactions::CreateChainTx(create_chain_tx.clone());
                 //Go through every input in the tx.
                 for input in &create_chain_tx.base_tx.inputs {
                     if &input.output_consumer_owners.len() <= &0 {
@@ -449,7 +449,7 @@ impl TxSigner for pvm::tx_format::Transactions {
             pvm::tx_format::Transactions::CreateSubnetTx(create_subnet_tx) => {
                 //Add the transaction bytes to the bytes array that we'll sign.
                 bytes_to_sign.extend_from_slice(&create_subnet_tx.to_bytes());
-
+                signed_tx.unsigned_tx = pvm::tx_format::Transactions::CreateSubnetTx(create_subnet_tx.clone());
                 //Go through every input in the tx.
                 for input in &create_subnet_tx.base_tx.inputs {
                     if &input.output_consumer_owners.len() <= &0 {
@@ -458,11 +458,11 @@ impl TxSigner for pvm::tx_format::Transactions {
                     }
                     //Use the output_consumer_owners "helper-datatype" to get the necessary addresses needed to sign the tx.
                     for output in &input.output_consumer_owners {
-                        //Credential object that we'll push the signatures needed for the tx to.
                         let mut c: Credential = Credential {
                             type_id: 9, //type_id is alsways 9 for credentials.
                             signatures: vec![],
                         };
+                        //Credential object that we'll push the signatures needed for the tx to.
                         for keypair in required_keypairs {
                             if output.address_bytes == keypair.address.address_bytes {
                                 //Sign the Transaction Data, and push the to the Credential.
