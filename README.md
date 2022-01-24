@@ -1,17 +1,19 @@
 # xavax-avalanche
 [![Test Status](https://github.com/diinki/xavax-avalanche/workflows/Rust/badge.svg?event=push)](https://github.com/diinki/xavax-avalanche/actions)
 
-### A Rust implementation of the entire Avalanche network transaction format
-including serialization & optional Features which add:
+## All-in-one SDK for the Avalanche Network:
+#### Transaction-format parsing, Cryptography, and more!
 
 * Transaction Signing
+* AVM and PVM Transaction format.
 * Avalanche and EVM cryptography (Bech32 addresses, managing Keychains, BIP39 & BIP44 for HD wallets and mnemonic phrases, etc).
 * The Entire Avalanche node JSONRPC API (get info from nodes, or submit transactions!)
 
-### This SDK is an all-in-one Crate which can help you build anything your heart desires on-top of the avalanche network! (wip).
+This SDK is an all-in-one Crate which can help you build anything your heart desires on-top of the avalanche network! (wip).
 
-### See documentation at [docs.xavax.io](https://docs.xavax.io).
-___
+#### See documentation at [docs.xavax.io](https://docs.xavax.io).
+
+
 ## Details: What can xavax-avalanche do?
 
 **With no features selected, this crate can:**
@@ -35,20 +37,22 @@ The `crypto-api` feature adds Keychain creation for Avalanche and the EVM, as we
 This feature allows you to create keychains from bip39 seed-phrases, and also allows generating new seed phrases *(with a cryptographically secure source of entropy, crypto-rng).*
 
 ### With All features, you could:
-> Create an avalanche wallet! Or perhaps create a game of some-sort utilizing avalanche! 
+> Create an avalanche wallet! Or perhaps create a game utilizing avalanche! 
 
 > You could compile to WASM, and use the compiled WASM for web-related reasons!
 
 > You could also create a subnet on avalanche as well as adding a custom blockchain, what that blockchain is for is something you and your imagination will answer...
 
-> You could use the Avalanche JSONRPC and get any info you could ever want from avalanche nodes! 
+> You could use the Avalanche JSONRPC and get any info you could ever want from avalanche nodes!
 
-### Create transactions, Sign them, and Send them!
-___
+#### Create transactions, Sign them, and Send them!
+
 
 ## Some things to point out
 
 * `xavax-avalanche` is currently in very early development, documentation is still very wip as well as the entire SDK.
+Feel free to ask questions about the SDK, there will be constant updates to the Docs and more examples using the SDK
+will be present.
 
 ### Feature completeness:
 
@@ -72,7 +76,7 @@ The documentation will be located at:
 
 ___
 
-## Usage
+## Usage & Examples
 
 Please view the docs for more detailed examples.
 
