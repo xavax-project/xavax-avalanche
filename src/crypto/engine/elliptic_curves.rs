@@ -90,7 +90,7 @@ pub trait MnemonicKeypair {
     /// 
     /// let derivation_path = "m/44'/9000'/0'/0/0";
     /// 
-    /// let keypair: (Address, SECP256K1Keypair) = AvalancheKeys::generate_keypair(seed_phrase, derivation_path);
+    /// let keypair: SECP256K1Keypair = AvalancheKeys::generate_keypair(seed_phrase, derivation_path);
     /// ```
     /// ## Note
     /// Much like the `generate_mnemonic_phrase()`, there exist higher-level abstractions that take care of the

@@ -21,16 +21,15 @@ impl DerivationPath {
     /// the parameters you pass into set_path() will define the derivation path, which derives the address derived from the seed.
     /// 
     /// * `coin_type: Option<u32>` this is the CoinType value of the derivation path, the coin_type used for avalanche X & P chain
-    ///    addresses is 9000.
+    ///    addresses is 9000. The default coin-type will be 9000 if you choose to not manually select one.
     /// 
-    /// * `account_index: u32` this is the account index value of the derivation path, This is usually used to create a new address
-    ///    every deposit an address receives, to increase anonymity. Another use-case would be to create different accounts which serve
-    ///    different purposes, such as a savings address, a trading address, etc etc.
+    /// * `account_index: u32` The account_index will create a new hardened keypair, unlike `address_index`. This can be used to create
+    /// new deposit accounts every deposit, to increase annonymity. 
     /// 
-    /// * `change_index: u32` this is used to define if the address will be used to receive "change" by spending a UTXO, most wallets do this,
-    ///    including the Metro wallets.
+    /// * `change_index: u32` this is used to define if the address will be used to receive "change" by spending a UTXO, most HD wallets do this. This
+    /// value is usually either 0 or 1 depending on if the address is used as a change address or not.
     /// 
-    /// * `address_index: u32` this value will also change the address, Metro wallets usually keep this at 0.
+    /// * `address_index: u32` address_index will derive a new soft keypair, unlike `account_index`.
     /// ____
     /// ## Note
     /// 
@@ -39,9 +38,6 @@ impl DerivationPath {
     /// 
     /// the Avalanche default wallet uses: `m/44'/9000'/index'/change/0` where `index` simply refers to the index of the address, while `change` is 1
     /// for change addresses, and 0 for non-change addresses.
-    /// 
-    /// An alternative method which *might* be superior would be to use `m/44'/9000'/account'/change/index`, where the `account` would give possibility to
-    /// have multiple accounts which have their own purpose, and still have new addresses per deposit using the index..
     pub fn generate_path(coin_type: Option<u32>, account_index: u32, change_index: u32, address_index: u32) -> Self {
         let coin: u32;
         match coin_type {
